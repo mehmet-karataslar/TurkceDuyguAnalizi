@@ -150,8 +150,10 @@ if model and vectorizer and label_encoder:
                     st.bar_chart(prob_df.set_index('Duygu')['Olasılık'])
                     
                     # Tablo
+                    # Yüzde değerlerini zaten string olarak oluşturduk, format'a gerek yok
+                    display_df = prob_df[['Duygu', 'Yüzde']].copy()
                     st.dataframe(
-                        prob_df[['Duygu', 'Yüzde']].style.format({'Yüzde': '{:.2%}'}),
+                        display_df,
                         use_container_width=True,
                         hide_index=True
                     )

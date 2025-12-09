@@ -1,0 +1,2 @@
+accuracy,precision,recall,f1_score,r_squared,mean_confidence,membership_type,n_features,n_classes
+0.7321603128054741,0.7977663762231318,0.7321603128054741,0.7370104881345433,0.6077092592967501,0.7276574011389855,triangular,150,10

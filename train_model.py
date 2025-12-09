@@ -60,7 +60,7 @@ def evaluate_model(model, X_test, y_test):
     }
 
 
-def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=50):
+def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=150):
     """
     Tüm üyelik fonksiyonlarını karşılaştır
     """
@@ -81,7 +81,9 @@ def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=50
             model = FuzzySentimentClassifier(
                 membership_type=mem_type,
                 n_features=n_features,
-                n_classes=len(np.unique(y_train))
+                n_classes=len(np.unique(y_train)),
+                min_membership_threshold=0.15,  # Minimum üyelik eşiği
+                max_features_per_rule=5  # Her kuralda maksimum 5 özellik
             )
             
             # Özellik isimlerini oluştur
@@ -136,7 +138,7 @@ def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=50
         return None, None, None
 
 
-def train_best_model(excel_path='TurkishTweets.xlsx', n_features=50, save_path='best_fuzzy_model.pkl'):
+def train_best_model(excel_path='TurkishTweets.xlsx', n_features=150, save_path='best_fuzzy_model.pkl'):
     """
     Veri setini yükle, tüm üyelik fonksiyonlarını test et, en iyisini kaydet
     """
@@ -188,7 +190,7 @@ if __name__ == "__main__":
     # Modeli eğit
     model, vectorizer, label_encoder, results_df = train_best_model(
         excel_path='TurkishTweets.xlsx',
-        n_features=50
+        n_features=150
     )
     
     if model is not None:

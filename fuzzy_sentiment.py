@@ -5,8 +5,6 @@ Farklı üyelik fonksiyonları ile bulanık çıkarım sistemi
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
-import skfuzzy as fuzz
-from skfuzzy import control as ctrl
 import pickle
 
 
@@ -66,7 +64,8 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
     Bulanık mantık tabanlı duygu analizi sınıflandırıcısı
     """
     
-    def __init__(self, membership_type='trapezoidal', n_features=10, n_classes=4):
+    def __init__(self, membership_type='trapezoidal', n_features=10, n_classes=4, 
+                 min_membership_threshold=0.1, max_features_per_rule=5):
         """
         Parameters:
         -----------
@@ -76,10 +75,16 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
             Kullanılacak özellik sayısı (en önemli n özellik)
         n_classes : int
             Sınıf sayısı
+        min_membership_threshold : float
+            Minimum üyelik derecesi eşiği (düşük üyelik dereceli kurallar filtrelenir)
+        max_features_per_rule : int
+            Her kuralda kullanılacak maksimum özellik sayısı
         """
         self.membership_type = membership_type
         self.n_features = n_features
         self.n_classes = n_classes
+        self.min_membership_threshold = min_membership_threshold
+        self.max_features_per_rule = max_features_per_rule
         self.feature_importance_ = None
         self.membership_params_ = None
         self.rules_ = None
@@ -172,10 +177,13 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
                     high = (max_val - 2*step, std_val/2)
                     very_high = (max_val - step, std_val/3)
                     
-                params[feature_name] = {
-                    'very_low': very_low, 'low': low, 'medium': medium,
-                    'high': high, 'very_high': very_high
-                } if n_sets == 3 else {'low': low, 'medium': medium, 'high': high}
+                if n_sets == 3:
+                    params[feature_name] = {'low': low, 'medium': medium, 'high': high}
+                else:
+                    params[feature_name] = {
+                        'very_low': very_low, 'low': low, 'medium': medium,
+                        'high': high, 'very_high': very_high
+                    }
                 
             elif self.membership_type == 'bell':
                 # Bell
@@ -252,44 +260,68 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
             # En yüksek üyelik derecelerine sahip özellikleri seç
             sorted_features = sorted(feature_memberships.items(), 
                                    key=lambda x: x[1][1], reverse=True)
-            top_features = sorted_features[:min(3, len(sorted_features))]  # En fazla 3 özellik
+            # Minimum eşiği geçen özellikleri filtrele
+            filtered_features = [(feat, mem) for feat, mem in sorted_features 
+                               if mem[1] >= self.min_membership_threshold]
             
-            # Kural oluştur: EĞER feature1=set1 VE feature2=set2 ... İSE label
-            rule = {
-                'conditions': [(feat, mem[0]) for feat, mem in top_features],
-                'conclusion': label,
-                'weight': np.mean([mem[1] for _, mem in top_features])  # Ortalama üyelik derecesi
-            }
-            rules.append(rule)
+            if len(filtered_features) == 0:
+                # Eşik geçen özellik yoksa en yüksek olanı al
+                filtered_features = sorted_features[:1]
+            
+            top_features = filtered_features[:min(self.max_features_per_rule, len(filtered_features))]
+            
+            # Ortalama üyelik derecesi
+            avg_membership = np.mean([mem[1] for _, mem in top_features])
+            
+            # Minimum eşiği geçen kuralları ekle
+            if avg_membership >= self.min_membership_threshold:
+                rule = {
+                    'conditions': [(feat, mem[0]) for feat, mem in top_features],
+                    'conclusion': label,
+                    'weight': avg_membership,
+                    'support': 1  # Bu kuralın kaç örnekte görüldüğü
+                }
+                rules.append(rule)
         
         # Benzer kuralları birleştir ve ağırlıklandır
         rule_dict = {}
         for rule in rules:
             key = tuple(sorted(rule['conditions']))
             if key not in rule_dict:
-                rule_dict[key] = {'conclusions': [], 'weights': []}
+                rule_dict[key] = {'conclusions': [], 'weights': [], 'supports': []}
             rule_dict[key]['conclusions'].append(rule['conclusion'])
             rule_dict[key]['weights'].append(rule['weight'])
+            rule_dict[key]['supports'].append(rule.get('support', 1))
         
         # Her kural için en sık görülen sonucu seç
         final_rules = []
         for key, data in rule_dict.items():
             conclusions = np.array(data['conclusions'])
             weights = np.array(data['weights'])
+            supports = np.array(data['supports'])
             
-            # Ağırlıklı mod
+            # Ağırlıklı mod (support ile çarpılmış)
             unique_labels = np.unique(conclusions)
             weighted_counts = {}
+            total_weight = 0
             for label in unique_labels:
                 mask = conclusions == label
-                weighted_counts[label] = np.sum(weights[mask])
+                # Ağırlık * support (daha fazla örnekte görülen kurallar daha önemli)
+                weighted_counts[label] = np.sum(weights[mask] * supports[mask])
+                total_weight += weighted_counts[label]
             
-            final_label = max(weighted_counts, key=weighted_counts.get)
-            final_rules.append({
-                'conditions': list(key),
-                'conclusion': final_label,
-                'confidence': weighted_counts[final_label] / np.sum(weights)
-            })
+            if total_weight > 0:
+                final_label = max(weighted_counts, key=weighted_counts.get)
+                confidence = weighted_counts[final_label] / total_weight
+                
+                # Minimum güven eşiğini geçen kuralları ekle
+                if confidence >= 0.3:  # En az %30 güven
+                    final_rules.append({
+                        'conditions': list(key),
+                        'conclusion': final_label,
+                        'confidence': confidence,
+                        'support': int(np.sum(supports[conclusions == final_label]))
+                    })
         
         self.rules_ = final_rules
         return final_rules
@@ -302,9 +334,22 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
         if feature_names is None:
             feature_names = [f'feature_{i}' for i in range(X.shape[1])]
         
-        # En önemli özellikleri seç (varyansa göre)
+        # En önemli özellikleri seç (varyans + sınıf ayrımına göre)
+        from sklearn.feature_selection import f_classif
+        
+        # Varyans skorları
         feature_vars = np.var(X, axis=0)
-        top_indices = np.argsort(feature_vars)[-self.n_features:][::-1]
+        
+        # F-score (sınıf ayrımı)
+        try:
+            f_scores, _ = f_classif(X, y)
+            f_scores = np.nan_to_num(f_scores, nan=0.0, posinf=0.0, neginf=0.0)
+        except:
+            f_scores = np.ones(X.shape[1])
+        
+        # Kombine skor: varyans * F-score
+        combined_scores = feature_vars * (1 + f_scores)
+        top_indices = np.argsort(combined_scores)[-self.n_features:][::-1]
         
         self.feature_importance_ = top_indices
         X_selected = X[:, top_indices]
@@ -355,8 +400,9 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
                         membership = self._compute_membership(value, params, set_name)
                         min_membership = min(min_membership, membership)
                 
-                # Kural güveni ile çarp
-                rule_score = min_membership * rule['confidence']
+                # Kural güveni ve support ile çarp (daha fazla örnekte görülen kurallar daha önemli)
+                support_factor = 1 + 0.1 * rule.get('support', 1)  # Support'a göre bonus
+                rule_score = min_membership * rule['confidence'] * support_factor
                 rule_scores.append((rule['conclusion'], rule_score))
             
             # En yüksek skorlu kuralın sonucunu seç
@@ -407,7 +453,9 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
                         membership = self._compute_membership(value, params, set_name)
                         min_membership = min(min_membership, membership)
                 
-                rule_score = min_membership * rule['confidence']
+                # Kural güveni ve support ile çarp
+                support_factor = 1 + 0.1 * rule.get('support', 1)
+                rule_score = min_membership * rule['confidence'] * support_factor
                 class_scores[rule['conclusion']] += rule_score
             
             # Normalize et

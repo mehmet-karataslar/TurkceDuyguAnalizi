@@ -22,11 +22,25 @@ except LookupError:
 TURKISH_STOP_WORDS = [
     've', 'ile', 'bir', 'bu', 'şu', 'o', 'de', 'da', 'ki', 'mi', 'mu', 'mü',
     'için', 'gibi', 'kadar', 'daha', 'en', 'çok', 'az', 'var', 'yok', 'ise',
-    'ama', 'ancak', 'fakat', 'lakin', 'çünkü', 'zira', 'dolayı', 'için',
-    'göre', 'karşı', 'doğru', 'rağmen', 'beri', 'sonra', 'önce', 'şimdi',
-    'henüz', 'hala', 'artık', 'yine', 'tekrar', 'gene', 'bile', 'dahi',
-    'sadece', 'yalnız', 'ancak', 'sanki', 'güya', 'meğer', 'nasıl', 'niçin',
-    'neden', 'niye', 'hangi', 'hangisi', 'kim', 'kimin', 'ne', 'neyi', 'nereye'
+    'ama', 'ancak', 'fakat', 'lakin', 'çünkü', 'zira', 'dolayı', 'göre',
+    'karşı', 'doğru', 'rağmen', 'beri', 'sonra', 'önce', 'şimdi', 'henüz',
+    'hala', 'artık', 'yine', 'tekrar', 'gene', 'bile', 'dahi', 'sadece',
+    'yalnız', 'sanki', 'güya', 'meğer', 'nasıl', 'niçin', 'neden', 'niye',
+    'hangi', 'hangisi', 'kim', 'kimin', 'ne', 'neyi', 'nere', 'nereye',
+    'nerede', 'nereden', 'neresi', 'ben', 'sen', 'o', 'biz', 'siz', 'onlar',
+    'bana', 'sana', 'ona', 'bize', 'size', 'onlara', 'beni', 'seni', 'onu',
+    'bizim', 'sizin', 'onların', 'mı', 'mu', 'mü', 'ya', 'yani', 'hem',
+    'hemde', 'çünkü', 'ile', 'i', 'a', 'e', 'ama', 'veya', 'ya da', 'daha',
+    'veya', 'ister', 'her', 'hiç', 'herhangi', 'birkaç', 'biri', 'diğer',
+    'başka', 'bazı', 'tüm', 'hep', 'hiçbir', 'bazıları', 'şey', 'şeyler',
+    'şöyle', 'böyle', 'öyle', 'aslında', 'zaten', 'hatta', 'örneğin',
+    'örnek', 'özellikle', 'genelde', 'yaklaşık', 'tam', 'ayrıca', 'ileti',
+    'hemen', 'çoğu', 'bazı', 'arada', 'arada sırada', 'bazen', 'sık sık',
+    'nadiren', 'ardından', 'önünden', 'üstüne', 'altına', 'yanına', 'ortaya',
+    'tüm', 'herkes', 'kimse', 'herkesin', 'kimsenin', 'şimdi', 'burada',
+    'orada', 'şuraya', 'şuradan', 'buraya', 'buradan', 'oraya', 'oradan',
+    'kendi', 'kendisi', 'kendim', 'kendin', 'kendileri', 'neden', 'nasıl',
+    'niçin', 'niye', 'çünkü', 'ancak', 'aslında', 'yani'
 ]
 
 
@@ -144,10 +158,11 @@ def preprocess_data(excel_path, text_column=None, label_column=None):
     # TF-IDF vektörizasyonu
     print("\nTF-IDF vektörizasyonu yapılıyor...")
     vectorizer = TfidfVectorizer(
-        max_features=500,  # En önemli 500 özellik
+        max_features=1000,  # En önemli 1000 özellik (artırıldı)
         min_df=2,  # En az 2 dokümanda geçmeli
-        max_df=0.95,  # En fazla %95 dokümanda geçebilir
-        ngram_range=(1, 2)  # Unigram ve bigram
+        max_df=0.90,  # En fazla %90 dokümanda geçebilir (daha seçici)
+        ngram_range=(1, 3),  # Unigram, bigram ve trigram (daha fazla bağlam)
+        sublinear_tf=True  # Log scaling (daha iyi ağırlıklandırma)
     )
     
     X = vectorizer.fit_transform(cleaned_texts)
