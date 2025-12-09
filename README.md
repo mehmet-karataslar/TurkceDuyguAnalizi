@@ -1,4 +1,4 @@
-# 🧠 Bulanık Mantık ile Türkçe Tweet Duygu Analizi
+# 🧠 Bulanık Mantık ile Türkçe Tweet Duygu Analizi Sistemi
 
 <div align="center">
 
@@ -9,9 +9,24 @@
 
 **Gelişmiş Bulanık Mantık Sistemi ile 10 Sınıflı Türkçe Duygu Analizi**
 
-[✨ Özellikler](#-özellikler) • [📊 Performans](#-performans-metrikleri) • [🚀 Kurulum](#-kurulum) • [📚 Dokümantasyon](#-detaylı-dokümantasyon)
+[✨ Özellikler](#-özellikler) • [📊 Performans](#-performans-metrikleri) • [🚀 Kurulum](#-kurulum-ve-kullanım) • [📚 Dokümantasyon](#-teknik-detaylar)
 
 </div>
+
+---
+
+## 📋 İçindekiler
+
+1. [Proje Özeti](#-proje-özeti)
+2. [Veri Seti](#-veri-seti)
+3. [Araştırma Süreci](#-araştırma-süreci)
+4. [İlk Test Sonuçları](#-ilk-test-sonuçları)
+5. [Model İyileştirme Süreci](#-model-iyileştirme-süreci)
+6. [Final Test Sonuçları](#-final-test-sonuçları)
+7. [Üyelik Fonksiyonları Karşılaştırması](#-üyelik-fonksiyonları-karşılaştırması)
+8. [Teknik Detaylar](#-teknik-detaylar)
+9. [Kurulum ve Kullanım](#-kurulum-ve-kullanım)
+10. [Görselleştirmeler](#-görselleştirmeler)
 
 ---
 
@@ -38,6 +53,14 @@ graph LR
 - ✅ 10 farklı duygu sınıfının yüksek doğrulukla tespiti
 - ✅ Yorumlanabilir (interpretable) model yapısı
 - ✅ Kullanıcı dostu web arayüzü
+
+### 🎓 Araştırma Amacı
+
+- Bulanık mantık sistemlerinin duygu analizi problemindeki etkinliğini araştırmak
+- Farklı üyelik fonksiyonlarının performansını karşılaştırmak
+- Türkçe doğal dil işleme için özelleştirilmiş bir çözüm sunmak
+- Yorumlanabilir (interpretable) bir model geliştirmek
+- Model performansını optimize etmek için sistematik iyileştirme süreci uygulamak
 
 ---
 
@@ -71,59 +94,6 @@ graph LR
 </td>
 </tr>
 </table>
-
----
-
-## 📊 Performans Metrikleri
-
-### 🏆 Final Model Sonuçları
-
-<div align="center">
-
-| Metrik | Değer | Durum |
-|:------:|:-----:|:-----:|
-| **Accuracy** | 73.22% | 🟢 Çok İyi |
-| **F1-Score** | 0.7370 | 🟢 Çok İyi |
-| **R² Skoru** | 0.6077 | 🟢 İyi |
-| **Precision** | 0.7978 | 🟢 Çok İyi |
-| **Recall** | 0.7322 | 🟢 Çok İyi |
-| **Ortalama Güven** | 72.77% | 🟢 Yüksek |
-
-</div>
-
-### 📈 Performans İyileştirme Grafiği
-
-```
-İLK TEST                              FİNAL TEST
-─────────────────────────────────────────────────────
-Accuracy:     26.88%  ████▌          73.22%  ███████████████
-F1-Score:     0.2182  ███▊           0.7370  ███████████████
-R²:           0.0066  ▏              0.6077  ████████████▌
-Precision:    0.5238  ██████████▌    0.7978  ████████████████
-Recall:       0.2688  ████▌          0.7322  ███████████████
-
-İYİLEŞTİRME ORANI: 2.7x - 92x arası! 🚀
-```
-
-### 🎯 Sınıf Bazlı Performans
-
-<details>
-<summary><b>Tıklayarak Detayları Görüntüle</b></summary>
-
-| Duygu | Precision | Recall | F1-Score | Durum |
-|:------|:---------:|:------:|:--------:|:-----:|
-| 😠 **kızgın** | 0.98 | 0.82 | **0.89** | ⭐⭐⭐ Mükemmel |
-| 😲 **surpriz** | 0.98 | 0.84 | **0.90** | ⭐⭐⭐ Mükemmel |
-| 😢 **üzgün** | 0.93 | 0.69 | **0.79** | ⭐⭐ Çok İyi |
-| 🤔 **Sorgulayıcı** | 0.90 | 0.78 | **0.84** | ⭐⭐ Çok İyi |
-| 😯 **Şaşırmış** | 0.85 | 0.72 | **0.78** | ⭐⭐ İyi |
-| 😊 **mutlu** | 0.80 | 0.66 | **0.72** | ⭐⭐ İyi |
-| 🎉 **Heyecanlı** | 0.78 | 0.50 | **0.61** | ⭐ Orta |
-| 😨 **korku** | 0.44 | 0.96 | **0.60** | ⚠️ Yüksek Recall |
-| 🔍 **Meraklı** | 0.61 | 0.54 | **0.58** | ⭐ Orta |
-| 😔 **Umutsuz** | 0.40 | 0.08 | **0.13** | ⚠️ Geliştirilebilir |
-
-</details>
 
 ---
 
@@ -188,7 +158,71 @@ graph TD
     style G fill:#9b59b6,color:#fff
 ```
 
+---
+
+## 📉 İlk Test Sonuçları
+
+### İlk Model Konfigürasyonu
+
+- **Özellik Sayısı**: 50
+- **TF-IDF Özellikleri**: 500
+- **N-gram Aralığı**: (1, 2) - Unigram ve Bigram
+- **Kural Başına Özellik**: 3
+- **Özellik Seçimi**: Sadece varyans bazlı
+- **Minimum Üyelik Eşiği**: Yok
+
+### İlk Test Performans Metrikleri
+
+| Metrik | Değer | Yorum |
+|--------|-------|-------|
+| **Accuracy** | 26.88% | ❌ Çok düşük |
+| **F1-Score** | 0.2182 | ❌ Yetersiz |
+| **R²** | 0.0066 | ❌ Neredeyse sıfır |
+| **Precision** | 0.5238 | ⚠️ Orta |
+| **Recall** | 0.2688 | ❌ Düşük |
+| **Ortalama Güven** | 0.2907 | ❌ Düşük güven |
+
+### İlk Test - Üyelik Fonksiyonu Karşılaştırması
+
+| Üyelik Fonksiyonu | Accuracy | F1-Score | R² | Precision | Recall | En İyi? |
+|-------------------|----------|----------|-----|-----------|--------|---------|
+| **Üçgen** | 18.77% | 0.0978 | -0.0369 | 0.5000 | 0.1877 | ❌ |
+| **Yamuk** | 16.91% | 0.0617 | -0.1926 | 0.0553 | 0.1691 | ❌ |
+| **Sigmoid** | 18.18% | 0.0846 | -0.0083 | 0.0659 | 0.1818 | ❌ |
+| **Gauss** | HATA | - | - | - | - | ❌ |
+| **Bell** ⭐ | 26.88% | 0.2182 | 0.0066 | 0.5238 | 0.2688 | ✅ |
+
+**Sonuç**: Bell üyelik fonksiyonu en iyi performansı gösterdi ancak genel performans kabul edilebilir seviyenin çok altındaydı.
+
+### İlk Test - Sınıf Bazlı Performans (Bell Fonksiyonu)
+
+| Duygu | Precision | Recall | F1-Score | Durum |
+|-------|-----------|--------|----------|-------|
+| Heyecanlı | 0.00 | 0.00 | 0.00 | ❌ Hiç tahmin edilemedi |
+| Meraklı | 0.55 | 0.34 | 0.42 | ⚠️ Orta |
+| Sorgulayıcı | 1.00 | 0.12 | 0.22 | ⚠️ Düşük recall |
+| Umutsuz | 0.00 | 0.00 | 0.00 | ❌ Hiç tahmin edilemedi |
+| korku | 0.60 | 0.44 | 0.51 | ⚠️ Orta |
+| kızgın | 0.17 | 0.88 | 0.29 | ⚠️ Düşük precision |
+| mutlu | 0.75 | 0.26 | 0.39 | ⚠️ Düşük recall |
+| surpriz | 1.00 | 0.01 | 0.02 | ❌ Çok düşük recall |
+| üzgün | 0.40 | 0.01 | 0.02 | ❌ Çok düşük recall |
+| Şaşırmış | 0.00 | 0.00 | 0.00 | ❌ Hiç tahmin edilemedi |
+
+**Tespit Edilen Sorunlar:**
+1. ❌ Çok düşük genel performans (%26.88 accuracy)
+2. ❌ Birçok sınıf hiç tahmin edilemedi (Heyecanlı, Umutsuz, Şaşırmış)
+3. ❌ Düşük recall değerleri (birçok sınıf için %1-12 arası)
+4. ❌ R² değeri neredeyse sıfır (model veriyi açıklamıyor)
+5. ❌ Düşük güven skorları (ortalama %29)
+
+---
+
+## 🚀 Model İyileştirme Süreci
+
 ### 🚀 İyileştirme Stratejisi
+
+Performansı artırmak için sistematik bir iyileştirme süreci uygulandı. Her iyileştirme adımı test edildi ve sonuçları değerlendirildi.
 
 <table>
 <tr>
@@ -256,7 +290,122 @@ graph TD
 
 </table>
 
+### İyileştirme Adımları
+
+#### 1️⃣ Özellik Sayısını Artırma
+
+**Değişiklik:**
+- Önceki: 50 özellik
+- Yeni: **150 özellik** (3x artış)
+
+**Gerekçe:** Daha fazla özellik, modelin daha fazla bilgi kullanmasını sağlar ve daha iyi sınıflandırma yapabilir.
+
+#### 2️⃣ TF-IDF Özellik Sayısını Artırma
+
+**Değişiklik:**
+- Önceki: 500 özellik
+- Yeni: **1000 özellik** (2x artış)
+
+**Gerekçe:** Daha fazla kelime ve kelime kombinasyonu, duygu analizi için daha zengin özellik seti sağlar.
+
+#### 3️⃣ N-gram Aralığını Genişletme
+
+**Değişiklik:**
+- Önceki: (1, 2) - Unigram ve Bigram
+- Yeni: **(1, 3) - Unigram, Bigram ve Trigram**
+
+**Gerekçe:** Trigram'lar, cümle bağlamını daha iyi yakalar ve Türkçe'deki kelime kombinasyonlarını daha iyi modeller.
+
+#### 4️⃣ TF-IDF Parametrelerini Optimize Etme
+
+**Değişiklik:**
+- `sublinear_tf=True` eklendi (log scaling)
+- `max_df=0.90` (daha seçici)
+
+**Gerekçe:** Log scaling, sık geçen kelimelerin aşırı ağırlıklandırılmasını önler.
+
+#### 5️⃣ Özellik Seçimini İyileştirme
+
+**Değişiklik:**
+- Önceki: Sadece varyans bazlı seçim
+- Yeni: **Varyans + F-score kombinasyonu**
+
+**Gerekçe:** F-score, sınıflar arası ayrımı ölçer. Varyans ile kombinasyonu, hem bilgi içeriği hem de sınıf ayrımı sağlayan özellikleri seçer.
+
+#### 6️⃣ Kural Başına Özellik Sayısını Artırma
+
+**Değişiklik:**
+- Önceki: 3 özellik/kural
+- Yeni: **5 özellik/kural**
+
+**Gerekçe:** Daha fazla özellik kombinasyonu, daha karmaşık ve doğru kurallar oluşturur.
+
+#### 7️⃣ Minimum Üyelik Eşiği Ekleme
+
+**Değişiklik:**
+- Önceki: Eşik yok
+- Yeni: **0.15 minimum üyelik eşiği**
+
+**Gerekçe:** Düşük üyelik dereceli kurallar gürültü yaratır. Eşik, sadece güçlü kuralları kullanır.
+
+#### 8️⃣ Kural Birleştirme Stratejisini İyileştirme
+
+**Değişiklik:**
+- **Support faktörü** eklendi
+- Daha fazla örnekte görülen kurallar daha yüksek ağırlık alır
+- **Minimum güven eşiği**: %30
+
+**Gerekçe:** Support faktörü, daha güvenilir kuralları ön plana çıkarır. Minimum güven eşiği, zayıf kuralları filtreler.
+
 ### 📊 İyileştirme Sonuçları
+
+---
+
+## 📊 Performans Metrikleri
+
+### 🏆 Final Model Sonuçları
+
+<div align="center">
+
+| Metrik | Değer | Durum |
+|:------:|:-----:|:-----:|
+| **Accuracy** | 73.22% | 🟢 Çok İyi |
+| **F1-Score** | 0.7370 | 🟢 Çok İyi |
+| **R² Skoru** | 0.6077 | 🟢 İyi |
+| **Precision** | 0.7978 | 🟢 Çok İyi |
+| **Recall** | 0.7322 | 🟢 Çok İyi |
+| **Ortalama Güven** | 72.77% | 🟢 Yüksek |
+
+</div>
+
+### 📈 Performans İyileştirme Grafiği
+
+```
+İLK TEST                              FİNAL TEST
+─────────────────────────────────────────────────────
+Accuracy:     26.88%  ████▌          73.22%  ███████████████
+F1-Score:     0.2182  ███▊           0.7370  ███████████████
+R²:           0.0066  ▏              0.6077  ████████████▌
+Precision:    0.5238  ██████████▌    0.7978  ████████████████
+Recall:       0.2688  ████▌          0.7322  ███████████████
+
+İYİLEŞTİRME ORANI: 2.7x - 92x arası! 🚀
+```
+
+## 📊 Final Test Sonuçları
+
+### Final Model Konfigürasyonu
+
+- **Özellik Sayısı**: 150
+- **TF-IDF Özellikleri**: 1000
+- **N-gram Aralığı**: (1, 3) - Unigram, Bigram, Trigram
+- **Kural Başına Özellik**: 5
+- **Özellik Seçimi**: Varyans + F-score kombinasyonu
+- **Minimum Üyelik Eşiği**: 0.15
+- **Support Faktörü**: Aktif
+- **Minimum Güven Eşiği**: %30
+
+### Performans Karşılaştırması
 
 <div align="center">
 
@@ -270,6 +419,52 @@ graph TD
 | **Güven** | 29.07% | **72.77%** | +43.70% | 🚀 **2.5x** |
 
 </div>
+
+### Final Test - Üyelik Fonksiyonu Karşılaştırması
+
+| Üyelik Fonksiyonu | Accuracy | F1-Score | R² | Precision | Recall | Ortalama Güven | En İyi? |
+|-------------------|----------|----------|-----|-----------|--------|----------------|---------|
+| **Üçgen** ⭐ | **73.22%** | **0.7370** | **0.6077** | **0.7978** | **0.7322** | **0.7277** | ✅ |
+| **Yamuk** | 5.47% | 0.0174 | -0.4433 | 0.1929 | 0.0547 | 0.5630 | ❌ |
+| **Sigmoid** | 15.64% | 0.0423 | -0.0032 | 0.0245 | 0.1564 | 0.1830 | ❌ |
+| **Gauss** | 5.28% | 0.0120 | -0.4191 | 0.1816 | 0.0528 | 0.5488 | ❌ |
+| **Bell** | 5.28% | 0.0120 | -0.1968 | 0.1816 | 0.0528 | 0.4087 | ❌ |
+
+**Sonuç**: İyileştirmelerden sonra **Üçgen (Triangular)** üyelik fonksiyonu en iyi performansı gösterdi.
+
+### 🎯 Sınıf Bazlı Performans
+
+<details>
+<summary><b>Tıklayarak Detayları Görüntüle</b></summary>
+
+| Duygu | Precision | Recall | F1-Score | Durum |
+|:------|:---------:|:------:|:--------:|:-----:|
+| 😠 **kızgın** | 0.98 | 0.82 | **0.89** | ⭐⭐⭐ Mükemmel |
+| 😲 **surpriz** | 0.98 | 0.84 | **0.90** | ⭐⭐⭐ Mükemmel |
+| 😢 **üzgün** | 0.93 | 0.69 | **0.79** | ⭐⭐ Çok İyi |
+| 🤔 **Sorgulayıcı** | 0.90 | 0.78 | **0.84** | ⭐⭐ Çok İyi |
+| 😯 **Şaşırmış** | 0.85 | 0.72 | **0.78** | ⭐⭐ İyi |
+| 😊 **mutlu** | 0.80 | 0.66 | **0.72** | ⭐⭐ İyi |
+| 🎉 **Heyecanlı** | 0.78 | 0.50 | **0.61** | ⭐ Orta |
+| 😨 **korku** | 0.44 | 0.96 | **0.60** | ⚠️ Yüksek Recall |
+| 🔍 **Meraklı** | 0.61 | 0.54 | **0.58** | ⭐ Orta |
+| 😔 **Umutsuz** | 0.40 | 0.08 | **0.13** | ⚠️ Geliştirilebilir |
+
+</details>
+
+**Gözlemler:**
+- ✅ **surpriz** ve **kızgın** sınıfları en iyi performansı gösterdi (F1 > 0.89)
+- ✅ Çoğu sınıf için F1-score > 0.70 (iyi seviye)
+- ⚠️ **korku** sınıfında yüksek recall (%96) ama düşük precision (%44) - fazla tahmin yapılıyor
+- ❌ **Umutsuz** sınıfı hala düşük performans gösteriyor (F1 = 0.13)
+
+### Kural İstatistikleri
+
+- **Toplam Kural Sayısı**: 1,100
+- **Aktif Kural Sayısı**: 1,100 (tümü kullanılıyor)
+- **Ortalama Kural Güveni**: 0.7277 (%72.77)
+- **En Yüksek Kural Güveni**: ~0.98
+- **En Düşük Kural Güveni**: 0.30 (minimum eşik)
 
 ---
 
@@ -314,6 +509,7 @@ graph TD
 </tr>
 </table>
 
+
 ---
 
 ## 🛠️ Teknik Mimari
@@ -323,10 +519,10 @@ graph TD
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    1. VERİ ÖN İŞLEME                        │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐           │
-│  │ Temizleme  │→ │ Stop Words │→ │Tokenization│           │
-│  │(URL,@,#)   │  │ Kaldırma   │  │            │           │
-│  └────────────┘  └────────────┘  └────────────┘           │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │ Temizleme  │→ │ Stop Words │→ │Tokenization│             │
+│  │(URL,@,#)   │  │ Kaldırma   │  │            │             │
+│  └────────────┘  └────────────┘  └────────────┘              │  
 └────────────────────────────┬────────────────────────────────┘
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -380,6 +576,129 @@ graph TD
                     └─────────────────┘
 ```
 
+## 🔬 Teknik Detaylar
+
+### Algoritma Akışı
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         VERİ SETİ (5,113 Tweet)                         │
+│                   10 Duygu Sınıfı: mutlu, üzgün, korku, ...            │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        VERİ ÖN İŞLEME                                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                │
+│  │ Metin        │  │ Stop Words   │  │ Tokenization │                │
+│  │ Temizleme    │→ │ Kaldırma     │→ │              │                │
+│  │ (URL, @, #)  │  │ (Türkçe)     │  │              │                │
+│  └──────────────┘  └──────────────┘  └──────────────┘                │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    TF-IDF VEKTÖRİZASYONU                                 │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ • N-gram: (1, 3) - Unigram, Bigram, Trigram         │              │
+│  │ • Max Features: 1000                                 │              │
+│  │ • Sublinear TF Scaling: Aktif                       │              │
+│  │ • Min DF: 2, Max DF: 0.90                           │              │
+│  └──────────────────────────────────────────────────────┘              │
+│                          ↓                                             │
+│              [1000 Boyutlu Özellik Vektörü]                            │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      ÖZELLİK SEÇİMİ (150 Özellik)                       │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ • Varyans Analizi                                    │              │
+│  │ • F-Score (Sınıf Ayrımı)                             │              │
+│  │ • Kombine Skor: Varyans × (1 + F-Score)              │              │
+│  │ • En İyi 150 Özellik Seçildi                         │              │
+│  └──────────────────────────────────────────────────────┘              │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      BULANIKLAŞTIRMA                                     │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ Her Özellik İçin:                                    │              │
+│  │   • Üçgen Üyelik Fonksiyonu                         │              │
+│  │   • 3 Bulanık Küme: Düşük, Orta, Yüksek             │              │
+│  │   • Minimum Üyelik Eşiği: 0.15                       │              │
+│  │   • Üyelik Dereceleri Hesaplanır                     │              │
+│  └──────────────────────────────────────────────────────┘              │
+│                          ↓                                             │
+│         [Her Özellik → Bulanık Küme Üyelik Dereceleri]                 │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      KURAL ÇIKARIMI                                     │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ • Her Eğitim Örneği İçin:                            │              │
+│  │   - En Yüksek Üyelik Dereceli 5 Özellik Seçilir     │              │
+│  │   - Kural Oluşturulur:                              │              │
+│  │     EĞER feat1=set1 VE feat2=set2 ... İSE label     │              │
+│  │                                                      │              │
+│  │ • Kural Birleştirme:                                │              │
+│  │   - Benzer Kurallar Birleştirilir                   │              │
+│  │   - Support Faktörü ile Ağırlıklandırılır           │              │
+│  │   - Minimum Güven Eşiği: %30                        │              │
+│  └──────────────────────────────────────────────────────┘              │
+│                          ↓                                             │
+│                    [1,100 Kural Oluşturuldu]                            │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      MODEL EĞİTİMİ                                     │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ • Train/Test Split: 80/20                            │              │
+│  │ • Train Seti: 4,089 örnek                            │              │
+│  │ • Test Seti: 1,023 örnek                             │              │
+│  │ • 5 Üyelik Fonksiyonu Test Edildi                    │              │
+│  │ • En İyi: Üçgen (Triangular)                         │              │
+│  └──────────────────────────────────────────────────────┘              │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      TAHMİN (ÇIKARIM)                                   │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ Yeni Metin İçin:                                     │              │
+│  │   1. Ön İşleme → TF-IDF → Özellik Seçimi            │              │
+│  │   2. Bulanıklaştırma (Üyelik Dereceleri)            │              │
+│  │   3. Kural Eşleştirme:                               │              │
+│  │      - Her kural için uygunluk derecesi              │              │
+│  │      - Support faktörü ile ağırlıklandırma          │              │
+│  │   4. Sınıf Skorları Toplanır                         │              │
+│  │   5. En Yüksek Skorlu Sınıf Seçilir                 │              │
+│  └──────────────────────────────────────────────────────┘              │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      DEĞERLENDİRME                                      │
+│  ┌──────────────────────────────────────────────────────┐              │
+│  │ Metrikler:                                           │              │
+│  │   • Accuracy: 73.22%                                │              │
+│  │   • F1-Score: 0.7370                                │              │
+│  │   • R²: 0.6077                                      │              │
+│  │   • Precision: 0.7978                                │              │
+│  │   • Recall: 0.7322                                   │              │
+│  │   • Ortalama Güven: 0.7277                           │              │
+│  │                                                      │              │
+│  │ Görselleştirmeler:                                   │              │
+│  │   • Confusion Matrix                                 │              │
+│  │   • Sınıf Dağılımı                                   │              │
+│  │   • Güven Skorları                                   │              │
+│  └──────────────────────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
 ### 💡 R² (Determinasyon Katsayısı) Açıklaması
 
 R² değeri, modelin veriyi ne kadar iyi açıkladığını gösteren bir metriktir:
@@ -398,7 +717,7 @@ R² değeri, modelin veriyi ne kadar iyi açıkladığını gösteren bir metrik
 
 ---
 
-## 🚀 Kurulum
+## 🚀 Kurulum ve Kullanım
 
 ### 📋 Gereksinimler
 
@@ -448,10 +767,10 @@ python evaluate_model.py
 
 **Çıktı**:
 - ✅ `evaluation_report.csv` - Detaylı metrikler
-- ✅ `confusion_matrix.png` - Confusion matrix görseli
-- ✅ `class_distribution.png` - Sınıf dağılımı
-- ✅ `confidence_distribution.png` - Güven skorları
-- ✅ `metrics_comparison.png` - Metrik karşılaştırması
+- ✅ `Gorseller/confusion_matrix.png` - Confusion matrix görseli
+- ✅ `Gorseller/class_distribution.png` - Sınıf dağılımı
+- ✅ `Gorseller/confidence_distribution.png` - Güven skorları
+- ✅ `Gorseller/metrics_comparison.png` - Metrik karşılaştırması
 
 #### 3️⃣ Web Arayüzü
 
@@ -477,9 +796,13 @@ Etiket   │ Açık Renkler = Yanlış Tahmin ❌ │
          └─────────────────────────────────┘
 ```
 
+**Dosya:** `Gorseller/confusion_matrix.png`
+
 ### 📈 2. Sınıf Dağılımı
 
 Gerçek vs Tahmin edilen sınıf dağılımlarını karşılaştırır.
+
+**Dosya:** `Gorseller/class_distribution.png`
 
 ### 📉 3. Güven Skorları
 
@@ -487,9 +810,101 @@ Modelin tahminlerindeki güven seviyelerini gösterir.
 - **Ortalama**: %72.77
 - **Dağılım**: Çoğu tahmin yüksek güvenle yapılıyor ✅
 
+**Dosya:** `Gorseller/confidence_distribution.png`
+
 ### 📊 4. Metrik Karşılaştırması
 
 Tüm performans metriklerini bar grafikte gösterir.
+
+**Dosya:** `Gorseller/metrics_comparison.png`
+
+---
+
+### Görsel 2: Üyelik Fonksiyonu Karşılaştırması
+
+**Dosya:** `membership_function_comparison.png` (oluşturulacak)
+
+Bu görsel, farklı üyelik fonksiyonlarının performansını karşılaştırır.
+
+```
+[Görsel alanı - membership_function_comparison.png dosyasını buraya ekleyin]
+```
+
+**Yorumlama:**
+- X ekseni: Üyelik fonksiyonları
+- Y ekseni: Metrik değerleri (0-1 arası)
+- En yüksek çubuk: En iyi performans (Üçgen)
+
+---
+
+### Görsel 3: Sınıf Dağılımı
+
+**Dosya:** `class_distribution.png`
+
+Bu görsel, gerçek ve tahmin edilen sınıf dağılımlarını karşılaştırır.
+
+```
+[Görsel alanı - class_distribution.png dosyasını buraya ekleyin]
+```
+
+**Yorumlama:**
+- Sol grafik: Gerçek sınıf dağılımı
+- Sağ grafik: Tahmin edilen sınıf dağılımı
+- Benzerlik: Model dengeli tahmin yapıyor ✅
+
+---
+
+### Görsel 4: Metrik Karşılaştırması
+
+**Dosya:** `metrics_comparison.png`
+
+Bu görsel, tüm performans metriklerini bir arada gösterir.
+
+```
+[Görsel alanı - metrics_comparison.png dosyasını buraya ekleyin]
+```
+
+**Yorumlama:**
+- Accuracy: Genel doğruluk (%73.22) ✅
+- F1-Score: Denge metrik (0.7370) ✅
+- R²: Açıklama gücü (0.6077) ✅
+- Precision: Kesinlik (0.7978) ✅
+- Recall: Geri çağırma (0.7322) ✅
+
+---
+
+### Görsel 5: Güven Skorları Dağılımı
+
+**Dosya:** `confidence_distribution.png`
+
+Bu görsel, modelin tahminlerindeki güven seviyelerini gösterir.
+
+```
+[Görsel alanı - confidence_distribution.png dosyasını buraya ekleyin]
+```
+
+**Yorumlama:**
+- Yüksek güven: Model emin ✅
+- Düşük güven: Model belirsiz ⚠️
+- Ortalama: 0.7277 (%72.77) - İyi seviye ✅
+- Dağılım: Çoğu tahmin yüksek güvenle yapılıyor
+
+---
+
+### Görsel 6: Performans İyileştirme Grafiği
+
+**Dosya:** `performance_improvement.png` (oluşturulacak)
+
+Bu görsel, iyileştirme sürecindeki performans değişimini gösterir.
+
+```
+[Görsel alanı - performance_improvement.png dosyasını buraya ekleyin]
+```
+
+**Yorumlama:**
+- X ekseni: İyileştirme adımları
+- Y ekseni: Metrik değerleri
+- İlk test → Final test: Dramatik iyileştirme görülüyor
 
 ---
 
@@ -529,53 +944,6 @@ Bm/
 └── 🔧 DİĞER
     └── .venv/                       # Sanal ortam (oluşturulacak)
 ```
-
----
-
-## 📚 Detaylı Dokümantasyon
-
-### 🔬 Algoritma Detayları
-
-<details>
-<summary><b>1. Veri Ön İşleme Detayları</b></summary>
-
-#### Metin Temizleme
-```python
-# URL'leri kaldır
-text = re.sub(r'http\S+|www\S+|https\S+', '', text)
-
-# @mention'ları kaldır
-text = re.sub(r'@\w+', '', text)
-
-# Hashtag işaretini kaldır
-text = re.sub(r'#', '', text)
-
-# Türkçe karakterleri koru
-text = re.sub(r'[^\w\sığüşöçİĞÜŞÖÇ]', ' ', text)
-```
-
-#### Stop Words
-Türkçe'ye özel 100+ stop word filtrelenir:
-- Bağlaçlar: ve, ile, veya, ya, ya da
-- Edatlar: için, gibi, kadar, ile
-- Zamirler: ben, sen, o, biz, siz, onlar
-- Diğer: bu, şu, mi, mu, mü
-
-</details>
-
-<details>
-<summary><b>2. TF-IDF Parametreleri</b></summary>
-
-```python
-TfidfVectorizer(
-    max_features=1000,      # En önemli 1000 kelime
-    min_df=2,               # En az 2 dokümanda geçmeli
-    max_df=0.90,            # En fazla %90 dokümanda
-    ngram_range=(1, 3),     # Unigram, Bigram, Trigram
-    sublinear_tf=True       # Log scaling
-)
-```
-
 
 ---
 

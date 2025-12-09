@@ -3,6 +3,7 @@ Veri Ön İşleme Modülü
 Excel'den veri okuma, Türkçe metin temizleme ve TF-IDF çıkarımı
 """
 
+
 import pandas as pd
 import numpy as np
 import re
@@ -11,6 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 import pickle
 import nltk
+
 
 # NLTK verilerini indir (ilk çalıştırmada)
 try:

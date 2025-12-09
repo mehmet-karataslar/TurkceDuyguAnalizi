@@ -3,6 +3,7 @@ Model Değerlendirme Modülü
 Detaylı metrikler, confusion matrix ve görselleştirmeler
 """
 
+
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -16,6 +17,7 @@ from sklearn.metrics import (
 from fuzzy_sentiment import FuzzySentimentClassifier
 from data_preprocessing import load_preprocessing_artifacts
 import os
+
 
 
 def calculate_r_squared(y_true, y_pred_proba):
@@ -37,6 +39,7 @@ def calculate_r_squared(y_true, y_pred_proba):
     return np.mean(r_squared)
 
 
+
 def evaluate_model_detailed(model, X_test, y_test, label_encoder):
     """
     Modeli detaylı olarak değerlendir
@@ -48,6 +51,7 @@ def evaluate_model_detailed(model, X_test, y_test, label_encoder):
     # Tahminler
     y_pred, confidences = model.predict(X_test)
     y_pred_proba = model.predict_proba(X_test)
+    
     
     # Temel metrikler
     accuracy = accuracy_score(y_test, y_pred)

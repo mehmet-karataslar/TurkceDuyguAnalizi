@@ -458,6 +458,7 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
                 rule_score = min_membership * rule['confidence'] * support_factor
                 class_scores[rule['conclusion']] += rule_score
             
+
             # Normalize et
             total = sum(class_scores.values())
             if total > 0:
@@ -469,6 +470,7 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
         
         return np.array(probabilities)
     
+
     def save(self, filepath):
         """
         Modeli kaydet
@@ -484,6 +486,7 @@ class FuzzySentimentClassifier(BaseEstimator, ClassifierMixin):
         }
         with open(filepath, 'wb') as f:
             pickle.dump(model_data, f)
+    
     
     @classmethod
     def load(cls, filepath):
