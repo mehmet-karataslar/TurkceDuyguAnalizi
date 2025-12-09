@@ -763,9 +763,8 @@ Tüm performans metriklerini bar grafikte gösterir.
 
 Bu görsel, farklı üyelik fonksiyonlarının performansını karşılaştırır.
 
-```
+
 **Dosya:** ![Confusion Matrix](Gorseller/membership_function_comparison.png)
-```
 
 **Yorumlama:**
 - X ekseni: Üyelik fonksiyonları
