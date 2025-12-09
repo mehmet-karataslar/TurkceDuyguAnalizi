@@ -3,6 +3,7 @@ Model Eğitimi ve Üyelik Fonksiyonu Karşılaştırması
 Tüm üyelik fonksiyonlarını test edip en iyisini seçer
 """
 
+
 import numpy as np
 import pandas as pd
 from data_preprocessing import preprocess_data, save_preprocessing_artifacts
@@ -60,6 +61,7 @@ def evaluate_model(model, X_test, y_test):
     }
 
 
+
 def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=150):
     """
     Tüm üyelik fonksiyonlarını karşılaştır
@@ -69,10 +71,12 @@ def compare_membership_functions(X_train, X_test, y_train, y_test, n_features=15
     results = []
     models = {}
     
+
     print("=" * 80)
     print("ÜYELİK FONKSİYONU KARŞILAŞTIRMASI")
     print("=" * 80)
     
+
     for mem_type in membership_types:
         print(f"\n{mem_type.upper()} üyelik fonksiyonu test ediliyor...")
         
