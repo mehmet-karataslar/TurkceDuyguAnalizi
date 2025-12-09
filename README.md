@@ -734,13 +734,13 @@ Etiket   │ Açık Renkler = Yanlış Tahmin ❌ │
          └─────────────────────────────────┘
 ```
 
-<img width="1260" alt="confusion_matrix" src="(https://github.com/mehmet-karataslar/TurkceDuyguAnalizi/blob/main/G%C3%96RSELLE%C5%9ET%C4%B0RMELER/confusion_matrix.png?raw=true)" />
+**Dosya:** ![Confusion Matrix](Gorseller/confusion_matrix.png)
 
 ### 📈 2. Sınıf Dağılımı
 
 Gerçek vs Tahmin edilen sınıf dağılımlarını karşılaştırır.
 
-**Dosya:** `Gorseller/class_distribution.png`
+**Dosya:** ![class_distribution](Gorseller/class_distribution.png)
 
 ### 📉 3. Güven Skorları
 
@@ -748,102 +748,32 @@ Modelin tahminlerindeki güven seviyelerini gösterir.
 - **Ortalama**: %72.77
 - **Dağılım**: Çoğu tahmin yüksek güvenle yapılıyor ✅
 
-**Dosya:** `Gorseller/confidence_distribution.png`
+**Dosya:** ![class_distribution](Gorseller/confidence_distribution.png)
 
 ### 📊 4. Metrik Karşılaştırması
 
 Tüm performans metriklerini bar grafikte gösterir.
 
-**Dosya:** `Gorseller/metrics_comparison.png`
+**Dosya:** ![class_distribution](Gorseller/metrics_comparison.png)
 
----
 
-### 📊 2. Üyelik Fonksiyonu Karşılaştırması
+
+### Görsel 2: Üyelik Fonksiyonu Karşılaştırması
+
 
 Bu görsel, farklı üyelik fonksiyonlarının performansını karşılaştırır.
 
-**Dosya:** `Gorseller/membership_function_comparison.png`
-
-<img width="1260" alt="membership_function_comparison" src="https://github.com/mehmet-karataslar/TurkceDuyguAnalizi/blob/main/G%C3%96RSELLE%C5%9ET%C4%B0RMELER/membership_function_comparison.png?raw=true" />
+```
+**Dosya:** ![Confusion Matrix](Gorseller/membership_function_comparison.png)
+```
 
 **Yorumlama:**
-- X ekseni: Üyelik fonksiyonları (Üçgen, Yamuk, Sigmoid, Gauss, Bell)
+- X ekseni: Üyelik fonksiyonları
 - Y ekseni: Metrik değerleri (0-1 arası)
-- Renkli çubuklar: Farklı metrikler (Accuracy, F1-Score, R², Precision, Recall)
-- ⭐ En yüksek performans: **Üçgen** üyelik fonksiyonu (F1: 0.737)
+- En yüksek çubuk: En iyi performans (Üçgen)
 
 ---
 
-### Görsel 3: Sınıf Dağılımı
-
-**Dosya:** `class_distribution.png`
-
-Bu görsel, gerçek ve tahmin edilen sınıf dağılımlarını karşılaştırır.
-
-```
-[Görsel alanı - class_distribution.png dosyasını buraya ekleyin]
-```
-
-**Yorumlama:**
-- Sol grafik: Gerçek sınıf dağılımı
-- Sağ grafik: Tahmin edilen sınıf dağılımı
-- Benzerlik: Model dengeli tahmin yapıyor ✅
-
----
-
-### Görsel 4: Metrik Karşılaştırması
-
-**Dosya:** `metrics_comparison.png`
-
-Bu görsel, tüm performans metriklerini bir arada gösterir.
-
-```
-[Görsel alanı - metrics_comparison.png dosyasını buraya ekleyin]
-```
-
-**Yorumlama:**
-- Accuracy: Genel doğruluk (%73.22) ✅
-- F1-Score: Denge metrik (0.7370) ✅
-- R²: Açıklama gücü (0.6077) ✅
-- Precision: Kesinlik (0.7978) ✅
-- Recall: Geri çağırma (0.7322) ✅
-
----
-
-### Görsel 5: Güven Skorları Dağılımı
-
-**Dosya:** `confidence_distribution.png`
-
-Bu görsel, modelin tahminlerindeki güven seviyelerini gösterir.
-
-```
-[Görsel alanı - confidence_distribution.png dosyasını buraya ekleyin]
-```
-
-**Yorumlama:**
-- Yüksek güven: Model emin ✅
-- Düşük güven: Model belirsiz ⚠️
-- Ortalama: 0.7277 (%72.77) - İyi seviye ✅
-- Dağılım: Çoğu tahmin yüksek güvenle yapılıyor
-
----
-
-### Görsel 6: Performans İyileştirme Grafiği
-
-**Dosya:** `performance_improvement.png` (oluşturulacak)
-
-Bu görsel, iyileştirme sürecindeki performans değişimini gösterir.
-
-```
-[Görsel alanı - performance_improvement.png dosyasını buraya ekleyin]
-```
-
-**Yorumlama:**
-- X ekseni: İyileştirme adımları
-- Y ekseni: Metrik değerleri
-- İlk test → Final test: Dramatik iyileştirme görülüyor
-
----
 
 ## 📁 Proje Yapısı
 
