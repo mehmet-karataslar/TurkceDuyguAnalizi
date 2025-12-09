@@ -758,20 +758,19 @@ Tüm performans metriklerini bar grafikte gösterir.
 
 ---
 
-### Görsel 2: Üyelik Fonksiyonu Karşılaştırması
-
-**Dosya:** `membership_function_comparison.png` (oluşturulacak)
+### 📊 2. Üyelik Fonksiyonu Karşılaştırması
 
 Bu görsel, farklı üyelik fonksiyonlarının performansını karşılaştırır.
 
-```
-[Görsel alanı - membership_function_comparison.png dosyasını buraya ekleyin]
-```
+**Dosya:** `Gorseller/membership_function_comparison.png`
+
+<img width="1260" alt="membership_function_comparison" src="https://github.com/mehmet-karataslar/TurkceDuyguAnalizi/blob/main/G%C3%96RSELLE%C5%9ET%C4%B0RMELER/membership_function_comparison.png?raw=true" />
 
 **Yorumlama:**
-- X ekseni: Üyelik fonksiyonları
+- X ekseni: Üyelik fonksiyonları (Üçgen, Yamuk, Sigmoid, Gauss, Bell)
 - Y ekseni: Metrik değerleri (0-1 arası)
-- En yüksek çubuk: En iyi performans (Üçgen)
+- Renkli çubuklar: Farklı metrikler (Accuracy, F1-Score, R², Precision, Recall)
+- ⭐ En yüksek performans: **Üçgen** üyelik fonksiyonu (F1: 0.737)
 
 ---
 
