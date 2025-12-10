@@ -710,6 +710,14 @@ python evaluate_model.py
 - ✅ `Gorseller/confidence_distribution.png` - Güven skorları
 - ✅ `Gorseller/metrics_comparison.png` - Metrik karşılaştırması
 
+
+#### SANAL ORTAMI AKTİVE ET
+
+```bash
+.\.venv\scripts\activate
+```
+
+
 #### 3️⃣ Web Arayüzü
 
 ```bash
