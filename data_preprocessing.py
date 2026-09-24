@@ -157,27 +157,29 @@ def preprocess_data(excel_path, text_column=None, label_column=None):
     
     encoded_labels = labels.map(label_to_id)
     
-    # TF-IDF vektörizasyonu
+    # TF-IDF vektörizasyonu (genişletilmiş korpus için ölçeklendirildi)
     print("\nTF-IDF vektörizasyonu yapılıyor...")
     vectorizer = TfidfVectorizer(
-        max_features=1000,  # En önemli 1000 özellik (artırıldı)
-        min_df=2,  # En az 2 dokümanda geçmeli
-        max_df=0.90,  # En fazla %90 dokümanda geçebilir (daha seçici)
-        ngram_range=(1, 3),  # Unigram, bigram ve trigram (daha fazla bağlam)
-        sublinear_tf=True  # Log scaling (daha iyi ağırlıklandırma)
+        max_features=3000,
+        min_df=3,
+        max_df=0.92,
+        ngram_range=(1, 3),
+        sublinear_tf=True,
     )
-    
+
     X = vectorizer.fit_transform(cleaned_texts)
-    X = X.toarray()  # Sparse matrix'i dense array'e çevir
-    
+    # Bellek için float32
+    X = X.astype(np.float32).toarray()
+
     print(f"Özellik vektörü boyutu: {X.shape}")
-    
+
     # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, encoded_labels.values, 
-        test_size=0.2, 
-        random_state=42, 
-        stratify=encoded_labels.values
+        X,
+        encoded_labels.values,
+        test_size=0.2,
+        random_state=42,
+        stratify=encoded_labels.values,
     )
     
     print(f"\nTrain seti: {X_train.shape[0]} örnek")

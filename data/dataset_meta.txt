@@ -1,0 +1,25 @@
+Türkçe Duygu Korpusu — otomatik birleştirme
+Toplam örnek: 67300
+Kaynaklar:
+  1) TurkishTweets.xlsx (orijinal 10 sınıf)
+  2) HuggingFace nihalenc/turkish-8class-emotion-dataset (~42k)
+  3) HuggingFace maydogan/TRSAv1 (12k Positive→mutlu, 12k Negative→üzgün)
+
+Etiket dağılımı:
+Etiket
+mutlu          22930
+üzgün          16733
+kızgın         10999
+korku           6066
+surpriz         4929
+Umutsuz         4796
+Heyecanlı        250
+Sorgulayıcı      244
+Şaşırmış         197
+Meraklı          156
+
+Kaynak dağılımı:
+Kaynak
+hf_nihalenc_8class         39024
+hf_TRSAv1_sample           23261
+original_turkish_tweets     5015
