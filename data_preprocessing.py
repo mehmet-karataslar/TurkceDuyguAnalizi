@@ -20,29 +20,21 @@ try:
 except LookupError:
     nltk.download('punkt', quiet=True)
 
-# Türkçe stop words listesi
+# Türkçe stop words — duygu/soru taşıyan kelimeler BİLEREK tutulur
+# (çok, hiç, neden, nasıl, beni, daha, en … stop listesinde YOK)
 TURKISH_STOP_WORDS = [
     've', 'ile', 'bir', 'bu', 'şu', 'o', 'de', 'da', 'ki', 'mi', 'mu', 'mü',
-    'için', 'gibi', 'kadar', 'daha', 'en', 'çok', 'az', 'var', 'yok', 'ise',
-    'ama', 'ancak', 'fakat', 'lakin', 'çünkü', 'zira', 'dolayı', 'göre',
-    'karşı', 'doğru', 'rağmen', 'beri', 'sonra', 'önce', 'şimdi', 'henüz',
-    'hala', 'artık', 'yine', 'tekrar', 'gene', 'bile', 'dahi', 'sadece',
-    'yalnız', 'sanki', 'güya', 'meğer', 'nasıl', 'niçin', 'neden', 'niye',
-    'hangi', 'hangisi', 'kim', 'kimin', 'ne', 'neyi', 'nere', 'nereye',
-    'nerede', 'nereden', 'neresi', 'ben', 'sen', 'o', 'biz', 'siz', 'onlar',
-    'bana', 'sana', 'ona', 'bize', 'size', 'onlara', 'beni', 'seni', 'onu',
-    'bizim', 'sizin', 'onların', 'mı', 'mu', 'mü', 'ya', 'yani', 'hem',
-    'hemde', 'çünkü', 'ile', 'i', 'a', 'e', 'ama', 'veya', 'ya da', 'daha',
-    'veya', 'ister', 'her', 'hiç', 'herhangi', 'birkaç', 'biri', 'diğer',
-    'başka', 'bazı', 'tüm', 'hep', 'hiçbir', 'bazıları', 'şey', 'şeyler',
-    'şöyle', 'böyle', 'öyle', 'aslında', 'zaten', 'hatta', 'örneğin',
-    'örnek', 'özellikle', 'genelde', 'yaklaşık', 'tam', 'ayrıca', 'ileti',
-    'hemen', 'çoğu', 'bazı', 'arada', 'arada sırada', 'bazen', 'sık sık',
-    'nadiren', 'ardından', 'önünden', 'üstüne', 'altına', 'yanına', 'ortaya',
-    'tüm', 'herkes', 'kimse', 'herkesin', 'kimsenin', 'şimdi', 'burada',
-    'orada', 'şuraya', 'şuradan', 'buraya', 'buradan', 'oraya', 'oradan',
-    'kendi', 'kendisi', 'kendim', 'kendin', 'kendileri', 'neden', 'nasıl',
-    'niçin', 'niye', 'çünkü', 'ancak', 'aslında', 'yani'
+    'için', 'gibi', 'ise', 'ama', 'ancak', 'fakat', 'lakin', 'çünkü', 'zira',
+    'dolayı', 'göre', 'rağmen', 'beri', 'sonra', 'önce', 'şimdi',
+    'yine', 'tekrar', 'gene', 'bile', 'dahi', 'sadece', 'yalnız', 'sanki',
+    'güya', 'meğer', 'mı', 'ya', 'yani', 'hem', 'veya', 'ya da', 'ister',
+    'her', 'herhangi', 'birkaç', 'biri', 'diğer', 'başka', 'bazı', 'tüm',
+    'hep', 'bazıları', 'şey', 'şeyler', 'şöyle', 'böyle', 'öyle', 'aslında',
+    'zaten', 'hatta', 'örneğin', 'örnek', 'özellikle', 'genelde', 'yaklaşık',
+    'ayrıca', 'hemen', 'çoğu', 'arada', 'bazen', 'nadiren',
+    'kendi', 'kendisi', 'kendim', 'kendin', 'kendileri',
+    'burada', 'orada', 'buraya', 'buradan', 'oraya', 'oradan',
+    'biz', 'siz', 'onlar', 'bize', 'size', 'onlara', 'bizim', 'sizin', 'onların',
 ]
 
 
@@ -55,9 +47,9 @@ def clean_text(text):
     
     # String'e çevir
     text = str(text)
-    
-    # Küçük harfe çevir
-    text = text.lower()
+
+    # Türkçe güvenli küçük harf (İ/I karışıklığını önle)
+    text = text.replace("I", "ı").replace("İ", "i").lower()
     
     # URL'leri kaldır
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)

@@ -1,35 +1,34 @@
-Veri kutuphanesi + curated egitim seti (2026 guncelleme)
-Kutuphane: 22584
-Egitim seti (TurkishTweets.xlsx): 10973
+Veri kutuphanesi + curated egitim seti (kalite odaklı 2026)
+Kutuphane: 17485
+Egitim seti (TurkishTweets.xlsx): 7886
+
+Not: HF igrenme/minnet/pismanlik egitime alinmadi (gurultu).
+Nadir siniflar icin curated tohum cumleler eklendi.
 
 Kutuphane etiketleri:
-mutlu          ~4060
-kızgın         ~4034
-korku          ~3846
-üzgün          ~3772
-surpriz        ~3276
-Umutsuz        ~2749
-Heyecanlı       250
-Sorgulayıcı     244
-Şaşırmış        197
-Meraklı         156
+Etiket
+kızgın         3412
+korku          3403
+mutlu          3368
+üzgün          3346
+surpriz        2843
+Heyecanlı       253
+Umutsuz         252
+Sorgulayıcı     248
+Şaşırmış        201
+Meraklı         159
 
 Egitim etiketleri:
-mutlu          1913
-kızgın         1904
-korku          1831
-üzgün          1807
-surpriz        1622
-Umutsuz        1049
-Heyecanlı       250
-Sorgulayıcı     244
-Şaşırmış        197
-Meraklı         156
+Etiket
+mutlu          1406
+kızgın         1402
+korku          1387
+üzgün          1386
+surpriz        1192
+Heyecanlı       253
+Umutsuz         252
+Sorgulayıcı     248
+Şaşırmış        201
+Meraklı         159
 
-Kaynaklar:
-- original TurkishTweets
-- HuggingFace nihalenc/turkish-8class-emotion-dataset
-- TRSAv1 indirildi, final korpusa dahil edilmedi (domain kaymasi)
-
-Aktif model: linear_svc_calibrated (Accuracy ~78.2%, F1 ~0.781)
-Fuzzy yedek: triangular (~53.9%)
+Kaynaklar: original TurkishTweets + HF 8class (temiz esleme) + rare seeds

@@ -12,6 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from data_preprocessing import clean_text, load_preprocessing_artifacts, remove_stopwords
+from emotion_rules import apply_emotion_cues
 from fuzzy_sentiment import FuzzySentimentClassifier
 
 st.set_page_config(
@@ -553,41 +554,56 @@ def load_model_comparison(path: str = "membership_function_comparison.csv") -> p
 
 
 def analyze_text(text: str, sk_bundle, fuzzy_model, vectorizer, label_encoder, active: str) -> dict[str, Any]:
-    cleaned = remove_stopwords(clean_text(text))
+    raw_clean = clean_text(text)
+    cleaned = remove_stopwords(raw_clean)
     if not cleaned.strip():
         return {"ok": False, "error": "Metin çok kısa kaldı. Biraz daha uzun bir cümle dener misin?"}
 
     vector = vectorizer.transform([cleaned])
-    id_to_label = label_encoder["id_to_label"]
+    id_to_label = {int(k): v for k, v in label_encoder["id_to_label"].items()}
 
     if active == "sklearn" and sk_bundle is not None:
         model = sk_bundle["model"]
         dense = vector.toarray()
-        pred = int(model.predict(dense)[0])
         if hasattr(model, "predict_proba"):
             probabilities = model.predict_proba(dense)[0]
         else:
             scores = model.decision_function(dense)[0]
             exp = np.exp(scores - np.max(scores))
             probabilities = exp / exp.sum()
-        label = id_to_label[pred]
-        conf = float(probabilities[pred])
+        # classes_ sırasına göre etiketle (güvenli eşleme)
+        classes = [int(c) for c in getattr(model, "classes_", range(len(probabilities)))]
+        proba_by_id = np.zeros(len(id_to_label), dtype=float)
+        for i, cid in enumerate(classes):
+            if cid < len(proba_by_id):
+                proba_by_id[cid] = float(probabilities[i])
+        probabilities = proba_by_id
     else:
         dense = vector.toarray()
-        prediction, confidence = fuzzy_model.predict(dense)
+        _prediction, confidence = fuzzy_model.predict(dense)
         probabilities = fuzzy_model.predict_proba(dense)[0]
-        label = id_to_label[int(prediction[0])]
-        conf = float(confidence[0])
-        if conf < 1e-6:
-            conf = float(np.max(probabilities))
-            label = id_to_label[int(np.argmax(probabilities))]
+        if float(confidence[0]) < 1e-6:
+            probabilities = probabilities
+
+    # Net duygu ipuçlarıyla düzelt / güçlendir (stopword'süz metin)
+    probabilities, cue_label, _boost = apply_emotion_cues(raw_clean, probabilities, id_to_label)
+    pred = int(np.argmax(probabilities))
+    label = id_to_label[pred]
+    conf = float(probabilities[pred])
 
     ranked = sorted(
-        ((id_to_label[i], float(probabilities[i])) for i in range(len(probabilities))),
+        ((id_to_label[i], float(probabilities[i])) for i in range(len(probabilities)) if i in id_to_label),
         key=lambda item: item[1],
         reverse=True,
     )
-    return {"ok": True, "label": label, "confidence": conf, "ranked": ranked, "cleaned": cleaned}
+    return {
+        "ok": True,
+        "label": label,
+        "confidence": conf,
+        "ranked": ranked,
+        "cleaned": cleaned,
+        "cue": cue_label,
+    }
 
 
 def render_assistant_reply(result: dict[str, Any]) -> None:

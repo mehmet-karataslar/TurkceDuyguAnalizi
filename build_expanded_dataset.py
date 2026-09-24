@@ -20,35 +20,61 @@ OUT_XLSX = ROOT / "TurkishTweets.xlsx"
 META = ROOT / "data" / "dataset_meta.txt"
 
 EIGHT_CLASS_MAP = {
+    # Sadece net 1-1 eşleşmeler (gürültülü: igrenme/minnet/pismanlik eğitimde YOK)
     "mutluluk": "mutlu",
     "uzuntu": "üzgün",
     "korku": "korku",
     "ofke": "kızgın",
     "saskinlik": "surpriz",
-    "igrenme": "kızgın",
-    "minnet": "mutlu",
-    "pismanlik": "Umutsuz",
 }
+
+ALLOWED_HF_SOURCE = set(EIGHT_CLASS_MAP.keys())
 
 # Egitim setine eklenecek HF ornek ust siniri (kalite icin dusuk tutuldu)
 TRAIN_CAP = {
-    "mutlu": 1200,
-    "üzgün": 1200,
-    "kızgın": 1200,
-    "korku": 1200,
-    "surpriz": 1000,
-    "Umutsuz": 800,
+    "mutlu": 700,
+    "üzgün": 700,
+    "kızgın": 700,
+    "korku": 700,
+    "surpriz": 500,
 }
 
 # Kutuphane icin daha genis
 LIBRARY_CAP = {
-    "mutlu": 3500,
-    "üzgün": 3500,
-    "kızgın": 3500,
-    "korku": 3500,
-    "surpriz": 3000,
-    "Umutsuz": 2500,
+    "mutlu": 3000,
+    "üzgün": 3000,
+    "kızgın": 3000,
+    "korku": 3000,
+    "surpriz": 2500,
 }
+
+# Nadir sınıflar için yüksek kaliteli tohum cümleler
+RARE_SEEDS = [
+    ("Yarın sabah erkenden yola çıkıyoruz, heyecandan uyku tutmuyor!", "Heyecanlı"),
+    ("Uzun zamandır beklediğim konser günü geldi çattı, yerimde duramıyorum.", "Heyecanlı"),
+    ("Sınav sonucu açıklandı, heyecanlıyım ve sabırsızlanıyorum!", "Heyecanlı"),
+    ("İlk kez uçağa bineceğim, heyecanlanıyorum!", "Heyecanlı"),
+    ("Proje finali yarın, heyecandan midem bulanıyor.", "Heyecanlı"),
+    ("Bu yeni diziyi merak ediyorum, acaba nasıl devam edecek?", "Meraklı"),
+    ("İnsanlar neden sabahları daha üretken oluyor, bilimsel bir açıklaması var mı?", "Meraklı"),
+    ("Rüyalarımızı gerçekten biz mi kontrol edebiliyoruz yoksa tamamen rastgele mi?", "Meraklı"),
+    ("Bu kahvenin tadını merak ediyorum, denemek istiyorum.", "Meraklı"),
+    ("Uzayda yaşam olup olmadığını merak ediyorum.", "Meraklı"),
+    ("Herkes erken kalkan yol alır diyor ama gece çalışanlar daha başarılı değil mi aslında?", "Sorgulayıcı"),
+    ("Neden herkes 8 bardak su içmemiz gerektiğini söylüyor, kim yaptı bu araştırmayı?", "Sorgulayıcı"),
+    ("Gerçekten kahvaltı en önemli öğün mü yoksa bunu firmalar mı uydurdu?", "Sorgulayıcı"),
+    ("Başarıyı sadece diplomayla mı ölçmeliyiz, bunu sorguluyorum.", "Sorgulayıcı"),
+    ("Sosyal medya bizi mutlu mu ediyor yoksa yalnızlaştırıyor mu, tartışmaya açık.", "Sorgulayıcı"),
+    ("Ne kadar çabalarsam çabalayayım sonucun değişmeyeceğini bilmek beni bitiriyor.", "Umutsuz"),
+    ("Artık hayal kurmaya bile gücüm kalmadı, her şey anlamsız geliyor.", "Umutsuz"),
+    ("Bu tünelin ucu bir yere çıkmıyor, karanlıkta kaybolduk gittik.", "Umutsuz"),
+    ("Umudumu tamamen kaybettim, hiçbir şey düzelmeyecek gibi.", "Umutsuz"),
+    ("Çaresizim, çıkış yolu göremiyorum.", "Umutsuz"),
+    ("Hayretler içinde kaldım, ne diyeceğimi bilemedim.", "Şaşırmış"),
+    ("Afalladım, bu kadarını beklemiyordum doğrusu.", "Şaşırmış"),
+    ("Donakaldım, olanları bir türlü idrak edemedim.", "Şaşırmış"),
+    ("Şaşırmış durumdayım, açıklama bekliyorum.", "Şaşırmış"),
+]
 
 
 def load_original() -> pd.DataFrame:
@@ -69,7 +95,10 @@ def load_eight_class(caps: dict[str, int], seed: int = 42) -> pd.DataFrame:
     for col in emotion_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
     df = df[df[emotion_cols].sum(axis=1) == 1].copy()
-    df["Etiket"] = df[emotion_cols].idxmax(axis=1).map(EIGHT_CLASS_MAP)
+    # Gürültülü sınıfları (igrenme/minnet/pismanlik) ele
+    source_emotion = df[emotion_cols].idxmax(axis=1)
+    df = df[source_emotion.isin(ALLOWED_HF_SOURCE)].copy()
+    df["Etiket"] = source_emotion[df.index].map(EIGHT_CLASS_MAP)
     df = df.dropna(subset=["Etiket"])
     # Tweet benzeri uzunluk filtresi (cok kisa/uzun sentetikleri ele)
     df["text"] = df["text"].astype(str).str.strip()
@@ -99,10 +128,26 @@ def dedupe(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(subset=["_k", "Etiket"]).drop(columns=["_k"]).reset_index(drop=True)
 
 
+def rare_seed_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "Tweet": [t for t, _ in RARE_SEEDS],
+            "Etiket": [e for _, e in RARE_SEEDS],
+            "Kaynak": "curated_rare_seeds",
+        }
+    )
+
+
 def main() -> None:
     original = load_original()
-    library = dedupe(pd.concat([original, load_eight_class(LIBRARY_CAP)], ignore_index=True))
-    train_set = dedupe(pd.concat([original, load_eight_class(TRAIN_CAP, seed=7)], ignore_index=True))
+    seeds = rare_seed_frame()
+    # Tohumları çoğalt (nadir sınıfları güçlendir)
+    seeds_boosted = pd.concat([seeds] * 8, ignore_index=True)
+
+    library = dedupe(pd.concat([original, load_eight_class(LIBRARY_CAP), seeds], ignore_index=True))
+    train_set = dedupe(
+        pd.concat([original, load_eight_class(TRAIN_CAP, seed=7), seeds_boosted], ignore_index=True)
+    )
 
     CORPUS_CSV.parent.mkdir(parents=True, exist_ok=True)
     library.to_csv(CORPUS_CSV, index=False, encoding="utf-8-sig")
@@ -111,9 +156,12 @@ def main() -> None:
     META.write_text(
         "\n".join(
             [
-                "Veri kutuphanesi + curated egitim seti",
+                "Veri kutuphanesi + curated egitim seti (kalite odaklı 2026)",
                 f"Kutuphane: {len(library)}",
                 f"Egitim seti (TurkishTweets.xlsx): {len(train_set)}",
+                "",
+                "Not: HF igrenme/minnet/pismanlik egitime alinmadi (gurultu).",
+                "Nadir siniflar icin curated tohum cumleler eklendi.",
                 "",
                 "Kutuphane etiketleri:",
                 library["Etiket"].value_counts().to_string(),
@@ -121,7 +169,7 @@ def main() -> None:
                 "Egitim etiketleri:",
                 train_set["Etiket"].value_counts().to_string(),
                 "",
-                "Kaynaklar: original TurkishTweets + HuggingFace nihalenc/turkish-8class-emotion-dataset",
+                "Kaynaklar: original TurkishTweets + HF 8class (temiz esleme) + rare seeds",
             ]
         ),
         encoding="utf-8",
