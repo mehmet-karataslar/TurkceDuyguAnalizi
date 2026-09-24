@@ -160,15 +160,14 @@ def preprocess_data(excel_path, text_column=None, label_column=None):
     # TF-IDF vektörizasyonu (genişletilmiş korpus için ölçeklendirildi)
     print("\nTF-IDF vektörizasyonu yapılıyor...")
     vectorizer = TfidfVectorizer(
-        max_features=3000,
-        min_df=3,
+        max_features=2500,
+        min_df=2,
         max_df=0.92,
         ngram_range=(1, 3),
         sublinear_tf=True,
     )
 
     X = vectorizer.fit_transform(cleaned_texts)
-    # Bellek için float32
     X = X.astype(np.float32).toarray()
 
     print(f"Özellik vektörü boyutu: {X.shape}")

@@ -1,25 +1,35 @@
-Türkçe Duygu Korpusu — otomatik birleştirme
-Toplam örnek: 67300
+Veri kutuphanesi + curated egitim seti (2026 guncelleme)
+Kutuphane: 22584
+Egitim seti (TurkishTweets.xlsx): 10973
+
+Kutuphane etiketleri:
+mutlu          ~4060
+kızgın         ~4034
+korku          ~3846
+üzgün          ~3772
+surpriz        ~3276
+Umutsuz        ~2749
+Heyecanlı       250
+Sorgulayıcı     244
+Şaşırmış        197
+Meraklı         156
+
+Egitim etiketleri:
+mutlu          1913
+kızgın         1904
+korku          1831
+üzgün          1807
+surpriz        1622
+Umutsuz        1049
+Heyecanlı       250
+Sorgulayıcı     244
+Şaşırmış        197
+Meraklı         156
+
 Kaynaklar:
-  1) TurkishTweets.xlsx (orijinal 10 sınıf)
-  2) HuggingFace nihalenc/turkish-8class-emotion-dataset (~42k)
-  3) HuggingFace maydogan/TRSAv1 (12k Positive→mutlu, 12k Negative→üzgün)
+- original TurkishTweets
+- HuggingFace nihalenc/turkish-8class-emotion-dataset
+- TRSAv1 indirildi, final korpusa dahil edilmedi (domain kaymasi)
 
-Etiket dağılımı:
-Etiket
-mutlu          22930
-üzgün          16733
-kızgın         10999
-korku           6066
-surpriz         4929
-Umutsuz         4796
-Heyecanlı        250
-Sorgulayıcı      244
-Şaşırmış         197
-Meraklı          156
-
-Kaynak dağılımı:
-Kaynak
-hf_nihalenc_8class         39024
-hf_TRSAv1_sample           23261
-original_turkish_tweets     5015
+Aktif model: linear_svc_calibrated (Accuracy ~78.2%, F1 ~0.781)
+Fuzzy yedek: triangular (~53.9%)

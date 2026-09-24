@@ -21,6 +21,14 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Logs / temp
+data/train_log*.txt
+*.log
+__pycache__/
+
+# Large optional downloads (regenerate via build script / HF)
+# data/raw/TRSAv1.csv is tracked for reproducibility; keep if already committed
+
 # Model files (optional - uncomment if you don't want to track model files)
 # *.pkl
 # *.h5
@@ -30,4 +38,3 @@ Thumbs.db
 # *.xlsx
 # *.csv
 # *.json
-

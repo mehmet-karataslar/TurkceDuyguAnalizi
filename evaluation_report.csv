@@ -1,2 +1,2 @@
-accuracy,precision,recall,f1_score,r_squared,mean_confidence,membership_type,n_features,n_classes
-0.7321603128054741,0.7977663762231318,0.7321603128054741,0.7370104881345433,0.6077092592967501,0.7276574011389855,triangular,150,10
+accuracy,precision,recall,f1_score,r_squared,confidence_mean,mean_confidence,membership_type,n_features,n_classes,train_size,test_size,active_model,corpus_note,fuzzy_accuracy,sklearn_accuracy
+0.7822323462414579,0.7826153592907361,0.7822323462414579,0.7814776398461494,0.6412741442695473,0.707522874455207,0.707522874455207,linear_svc_calibrated,2500,10,8778,2195,linear_svc_calibrated,curated_expanded_emotion,0.5394077448747152,0.7822323462414579
