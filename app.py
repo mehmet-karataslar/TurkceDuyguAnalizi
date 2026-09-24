@@ -1,5 +1,5 @@
 """
-DuyguAsistan — profesyonel sohbet arayüzü + proje paneli
+DuyguAsistan — canlı sohbet arayüzü + Türkçe açıklamalı proje paneli
 """
 
 from __future__ import annotations
@@ -16,23 +16,22 @@ from fuzzy_sentiment import FuzzySentimentClassifier
 
 st.set_page_config(
     page_title="DuyguAsistan",
-    page_icon="◈",
+    page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Duygu renkleri: mat, okunaklı (neon yok)
 EMOTION_META = {
-    "mutlu": {"emoji": "😊", "color": "#1f6b5a", "hint": "Pozitif ve neşeli bir ton"},
-    "üzgün": {"emoji": "😢", "color": "#4a5568", "hint": "Üzüntü veya hayal kırıklığı"},
-    "korku": {"emoji": "😨", "color": "#3d4f7c", "hint": "Endişe veya korku hissi"},
-    "kızgın": {"emoji": "😠", "color": "#9b2c2c", "hint": "Öfke veya rahatsızlık"},
-    "surpriz": {"emoji": "😲", "color": "#9a5b1f", "hint": "Şaşkınlık / beklenmedik durum"},
-    "Şaşırmış": {"emoji": "😯", "color": "#8a5a1e", "hint": "Hayret ve şaşırma"},
-    "Heyecanlı": {"emoji": "🎉", "color": "#8b3a5c", "hint": "Enerji ve heyecan"},
-    "Meraklı": {"emoji": "🔍", "color": "#2b5f8a", "hint": "Merak ve ilgi"},
-    "Sorgulayıcı": {"emoji": "🤔", "color": "#3f4e8c", "hint": "Soru sorma / sorgulama"},
-    "Umutsuz": {"emoji": "😔", "color": "#5c534a", "hint": "Umutsuzluk veya yılgınlık"},
+    "mutlu": {"emoji": "😊", "color": "#38bdf8", "hint": "Pozitif ve neşeli bir ton"},
+    "üzgün": {"emoji": "😢", "color": "#7dd3fc", "hint": "Üzüntü veya hayal kırıklığı"},
+    "korku": {"emoji": "😨", "color": "#60a5fa", "hint": "Endişe veya korku hissi"},
+    "kızgın": {"emoji": "😠", "color": "#93c5fd", "hint": "Öfke veya rahatsızlık"},
+    "surpriz": {"emoji": "😲", "color": "#22d3ee", "hint": "Şaşkınlık / beklenmedik durum"},
+    "Şaşırmış": {"emoji": "😯", "color": "#67e8f9", "hint": "Hayret ve şaşırma"},
+    "Heyecanlı": {"emoji": "🎉", "color": "#0ea5e9", "hint": "Enerji ve heyecan"},
+    "Meraklı": {"emoji": "🔍", "color": "#0284c7", "hint": "Merak ve ilgi"},
+    "Sorgulayıcı": {"emoji": "🤔", "color": "#3b82f6", "hint": "Soru sorma / sorgulama"},
+    "Umutsuz": {"emoji": "😔", "color": "#94a3b8", "hint": "Umutsuzluk veya yılgınlık"},
 }
 
 MEMBERSHIP_TR = {
@@ -40,12 +39,12 @@ MEMBERSHIP_TR = {
     "trapezoidal": "Yamuk",
     "sigmoid": "Sigmoid",
     "gaussian": "Gauss",
-    "bell": "Bell",
+    "bell": "Bell (çan)",
 }
 
 DATASET_SOURCES = [
-    "Orijinal TurkishTweets (10 sınıf)",
-    "HuggingFace: nihalenc/turkish-8class-emotion-dataset",
+    "Orijinal Türkçe tweet veri seti (10 duygu sınıfı)",
+    "Hugging Face: 8 sınıflı Türkçe duygu veri seti",
 ]
 
 STARTERS = [
@@ -58,321 +57,424 @@ STARTERS = [
 ]
 
 VISUALS = [
-    ("Metrikler", "Gorseller/metrics_comparison.png"),
-    ("Üyelik karşılaştırma", "Gorseller/membership_function_comparison.png"),
-    ("Confusion matrix", "Gorseller/confusion_matrix.png"),
+    ("Başarı metrikleri", "Gorseller/metrics_comparison.png"),
+    ("Üyelik karşılaştırması", "Gorseller/membership_function_comparison.png"),
+    ("Karışıklık matrisi", "Gorseller/confusion_matrix.png"),
     ("Sınıf dağılımı", "Gorseller/class_distribution.png"),
     ("Güven dağılımı", "Gorseller/confidence_distribution.png"),
 ]
 
 CUSTOM_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Baskerville:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Outfit:wght@600;700;800&display=swap');
 
 :root {
-  --ink: #12151c;
-  --ink-soft: #3a4150;
-  --muted: #5c6575;
-  --line: #d8dce3;
-  --paper: #f4f2ee;
-  --card: #ffffff;
-  --accent: #1c4b5a;
-  --accent-soft: #e6eef1;
-  --sidebar: #161b22;
-  --sidebar-text: #e8eaed;
-  --sidebar-muted: #9aa3b2;
+  --ocean-deep: #071525;
+  --ocean-mid: #0c2340;
+  --ocean-panel: #0a1f3d;
+  --sea: #0284c7;
+  --sea-bright: #38bdf8;
+  --foam: #e8f4fc;
+  --white: #ffffff;
+  --mist: #94a3b8;
 }
 
 html, body, [class*="css"] {
-  font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif !important;
-  color: var(--ink);
+  font-family: 'Nunito', 'Segoe UI', sans-serif !important;
 }
 
 .stApp {
   background:
-    linear-gradient(180deg, #efece6 0%, var(--paper) 40%, #ebe8e2 100%);
+    radial-gradient(900px 480px at 12% -8%, rgba(14, 165, 233, 0.22) 0%, transparent 55%),
+    radial-gradient(720px 420px at 92% 8%, rgba(56, 189, 248, 0.14) 0%, transparent 50%),
+    radial-gradient(600px 360px at 55% 100%, rgba(2, 132, 199, 0.18) 0%, transparent 48%),
+    linear-gradient(165deg, #050f1c 0%, #071525 42%, #0a1c33 100%) !important;
+  color: #e8f4fc !important;
 }
 
-[data-testid="stHeader"] { background: transparent; }
-#MainMenu, footer { visibility: hidden; }
+[data-testid="stHeader"] {
+  background: transparent !important;
+}
+[data-testid="stToolbar"] { background: transparent !important; }
 
-/* —— Sidebar: koyu, sakin, profesyonel —— */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+[data-testid="stStatusWidget"] { display: none !important; }
+
+/* ===== Sol paneli açan düğme — büyük, etiketli, animasyonlu ===== */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  background: linear-gradient(135deg, #0369a1, #38bdf8) !important;
+  color: #fff !important;
+  border: 2px solid #7dd3fc !important;
+  border-radius: 16px !important;
+  padding: 0.55rem 0.85rem !important;
+  min-width: 3.2rem !important;
+  min-height: 3.2rem !important;
+  box-shadow: 0 10px 28px rgba(2, 132, 199, 0.45), 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+  z-index: 999999 !important;
+  animation: pulse-panel 2.2s ease-in-out infinite !important;
+}
+[data-testid="stSidebarCollapsedControl"]::after,
+[data-testid="collapsedControl"]::after {
+  content: "Proje Paneli";
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 0.82rem !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.02em !important;
+}
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg {
+  fill: #fff !important;
+  color: #fff !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+@keyframes pulse-panel {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 28px rgba(2,132,199,.45), 0 0 0 3px rgba(56,189,248,.2); }
+  50% { transform: scale(1.04); box-shadow: 0 12px 32px rgba(56,189,248,.4), 0 0 0 5px rgba(125,211,252,.28); }
+}
+
+button[kind="headerNoPadding"],
+[data-testid="stExpandSidebarButton"],
+[data-testid="stBaseButton-headerNoPadding"] {
+  background: linear-gradient(135deg, #0369a1, #0ea5e9) !important;
+  color: #fff !important;
+  border: 2px solid #7dd3fc !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+/* Sidebar — koyu deniz mavisi */
 section[data-testid="stSidebar"] {
-  background: var(--sidebar) !important;
-  border-right: 1px solid #2a313c;
+  background: linear-gradient(185deg, #061628 0%, #0a2344 45%, #0c2f56 100%) !important;
+  border-right: 3px solid #1d4ed8 !important;
 }
-section[data-testid="stSidebar"] > div {
-  background: var(--sidebar) !important;
-}
-section[data-testid="stSidebar"] * {
-  color: var(--sidebar-text) !important;
-}
+section[data-testid="stSidebar"] > div { background: transparent !important; }
+section[data-testid="stSidebar"] * { color: #e8f4fc !important; }
 section[data-testid="stSidebar"] .stMarkdown p,
 section[data-testid="stSidebar"] .stCaption,
 section[data-testid="stSidebar"] label,
 section[data-testid="stSidebar"] small {
-  color: var(--sidebar-muted) !important;
+  color: #bae6fd !important;
 }
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
   color: #ffffff !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   font-size: 1.35rem !important;
 }
 section[data-testid="stSidebar"] [data-testid="stMetricLabel"] {
-  color: #b8c0cc !important;
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.7rem !important;
+  color: #7dd3fc !important;
+  font-weight: 800 !important;
 }
 section[data-testid="stSidebar"] [data-testid="stExpander"] {
-  background: #1e2530 !important;
-  border: 1px solid #2f3846 !important;
-  border-radius: 8px !important;
-}
-section[data-testid="stSidebar"] [data-testid="stExpander"] summary {
-  font-weight: 600 !important;
-  color: #f0f2f5 !important;
+  background: rgba(14, 165, 233, 0.12) !important;
+  border: 1px solid rgba(125, 211, 252, 0.28) !important;
+  border-radius: 14px !important;
+  margin-bottom: 0.45rem !important;
 }
 section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
-  background: #1e2530 !important;
-  border: 1px solid #3a4454 !important;
-  color: #f0f2f5 !important;
+  background: rgba(8, 30, 55, 0.9) !important;
+  border-color: rgba(125, 211, 252, 0.35) !important;
 }
 section[data-testid="stSidebar"] img {
-  border-radius: 6px;
-  border: 1px solid #3a4454;
-}
-section[data-testid="stSidebar"] hr {
-  border-color: #2f3846 !important;
+  border-radius: 10px;
+  border: 2px solid rgba(56, 189, 248, 0.35);
 }
 
 .block-container {
-  padding-top: 1.5rem !important;
-  padding-bottom: 7rem !important;
-  max-width: 820px !important;
+  padding-top: 1.1rem !important;
+  padding-bottom: 2.5rem !important;
+  max-width: 840px !important;
 }
 
-/* Brand */
 .brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--ink);
-  margin-bottom: 1.25rem;
+  gap: 0.95rem;
+  margin-bottom: 0.65rem;
 }
 .brand-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: var(--accent);
+  width: 56px; height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #0369a1 0%, #38bdf8 100%);
   color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-family: 'Libre Baskerville', Georgia, serif;
+  display: grid; place-items: center;
+  font-size: 1.45rem;
+  box-shadow: 0 10px 24px rgba(14, 165, 233, 0.35);
+  border: 2px solid #7dd3fc;
 }
 .brand h1 {
-  font-family: 'Libre Baskerville', Georgia, serif;
-  font-size: 1.7rem;
-  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
   margin: 0;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  background: linear-gradient(90deg, #e8f4fc, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.03em;
 }
 .brand p {
   margin: 0.2rem 0 0;
-  color: var(--muted);
-  font-size: 0.95rem;
-  font-weight: 500;
+  color: #7dd3fc;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .welcome {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--accent);
-  border-radius: 8px;
-  padding: 1.35rem 1.4rem;
-  margin: 0.5rem 0 1rem;
-  color: var(--ink);
-  font-size: 1.02rem;
+  background: linear-gradient(135deg, #0c2340 0%, #0a2a4a 100%);
+  border: 2px solid #1d4ed8;
+  border-radius: 20px;
+  padding: 1.25rem 1.35rem;
+  margin: 0.35rem 0 1rem;
+  color: #e8f4fc;
+  box-shadow: 0 12px 28px rgba(2, 132, 199, 0.18);
+  font-size: 1.05rem;
   line-height: 1.55;
 }
-.welcome strong {
-  color: var(--accent);
-  font-weight: 700;
-}
+.welcome strong { color: #38bdf8; }
 
 .section-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin: 0.5rem 0 0.65rem;
+  color: #38bdf8;
+  margin: 0.35rem 0 0.55rem;
 }
 
 .emotion-card {
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 1.15rem 1.25rem;
-  margin: 0.4rem 0 0.85rem;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-left: 5px solid var(--accent);
+  margin: 0.35rem 0 0.8rem;
+  background: linear-gradient(160deg, #0c2340 0%, #102a4a 100%);
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  box-shadow: 0 10px 26px rgba(2, 20, 40, 0.45);
+  border-left: 6px solid #38bdf8;
 }
-.emotion-head {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
+.emotion-head { display: flex; align-items: center; gap: 0.85rem; }
 .emotion-emoji {
-  width: 52px;
-  height: 52px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  font-size: 1.55rem;
-  border: 1px solid var(--line);
-  background: var(--accent-soft);
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: grid; place-items: center;
+  font-size: 1.6rem;
 }
 .emotion-label {
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 1.45rem;
-  font-weight: 700;
-  color: var(--ink);
+  font-weight: 800;
+  color: #ffffff;
   margin: 0;
-  text-transform: capitalize;
 }
 .emotion-sub {
-  margin: 0.2rem 0 0;
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-  font-weight: 500;
+  margin: 0.15rem 0 0;
+  color: #bae6fd;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 .confidence-row {
-  margin-top: 1rem;
+  margin-top: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
 }
 .confidence-bar {
-  flex: 1;
-  height: 8px;
-  border-radius: 2px;
-  background: #e4e7ec;
+  flex: 1; height: 12px;
+  border-radius: 999px;
+  background: #1e3a5f;
   overflow: hidden;
 }
-.confidence-fill {
-  height: 100%;
-  border-radius: 2px;
-}
+.confidence-fill { height: 100%; border-radius: 999px; }
 .confidence-pct {
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 1.05rem;
   min-width: 3.4rem;
   text-align: right;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  color: #e8f4fc;
 }
 .alts {
-  margin-top: 0.95rem;
+  margin-top: 0.85rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 .alt-chip {
   font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.32rem 0.7rem;
-  border-radius: 6px;
-  background: #f0efe9;
-  color: var(--ink-soft);
-  border: 1px solid var(--line);
+  font-weight: 700;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.18);
+  color: #e0f2fe;
+  border: 1px solid rgba(125, 211, 252, 0.4);
 }
 
 .side-title {
-  font-family: 'Libre Baskerville', Georgia, serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  margin: 0 0 0.35rem 0;
-  color: #ffffff !important;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 0.3rem 0;
+  color: #fff !important;
 }
 .side-chip {
   display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 0.28rem 0.6rem;
-  border-radius: 4px;
-  background: #243040;
-  border: 1px solid #3a4658;
-  color: #c5ced9 !important;
-  margin-bottom: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #38bdf8;
+  color: #071525 !important;
+  border: none;
+  margin-bottom: 0.75rem;
+}
+.info-box {
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  margin: 0.45rem 0 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #e8f4fc !important;
 }
 .pipeline-step {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   line-height: 1.45;
-  padding: 0.55rem 0.65rem;
+  padding: 0.55rem 0.7rem;
   margin-bottom: 0.4rem;
-  border-radius: 6px;
-  background: #1e2530;
-  border-left: 3px solid #6b8f9c;
-  color: #d5dae3 !important;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.12);
+  border-left: 4px solid #38bdf8;
 }
 
-[data-testid="stChatMessage"] {
-  background: transparent !important;
-  padding: 0.35rem 0 !important;
-}
+[data-testid="stChatMessage"] { background: transparent !important; }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] strong {
-  color: var(--ink) !important;
+  color: #e8f4fc !important;
   font-size: 1.02rem !important;
-  line-height: 1.6 !important;
+  line-height: 1.55 !important;
 }
 
-/* Chat input — net, okunaklı */
-div[data-testid="stChatInput"] {
+[data-testid="stBottom"],
+[data-testid="stBottomBlockContainer"],
+div[data-testid="stBottomBlockContainer"] {
   background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
-div[data-testid="stChatInput"] textarea {
-  font-family: 'IBM Plex Sans', sans-serif !important;
-  font-size: 1rem !important;
-  color: var(--ink) !important;
+[data-testid="stBottomBlockContainer"]::before {
+  display: none !important;
 }
 
-/* Butonlar: keskin, profesyonel (pill/neon yok) */
+div[data-testid="stChatInput"],
+[data-testid="stChatInput"] {
+  background: transparent !important;
+  pointer-events: auto !important;
+  z-index: 100 !important;
+}
+div[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] > div {
+  background: #0c2340 !important;
+  border: 2px solid #38bdf8 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 32px rgba(2, 132, 199, 0.28), 0 0 0 3px rgba(56, 189, 248, 0.12) !important;
+  pointer-events: auto !important;
+}
+div[data-testid="stChatInput"] textarea,
+[data-testid="stChatInput"] textarea {
+  font-family: 'Nunito', sans-serif !important;
+  font-size: 1.08rem !important;
+  color: #e8f4fc !important;
+  caret-color: #38bdf8 !important;
+  background: #0c2340 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+div[data-testid="stChatInput"] textarea::placeholder {
+  color: #7dd3fc !important;
+  opacity: 0.75 !important;
+}
+div[data-testid="stChatInput"] button {
+  background: linear-gradient(135deg, #0369a1, #38bdf8) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+}
+
 .stButton > button {
-  border-radius: 8px !important;
-  border: 1.5px solid var(--ink) !important;
-  background: var(--card) !important;
-  color: var(--ink) !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  padding: 0.55rem 0.9rem !important;
-  box-shadow: none !important;
-  transition: background 0.15s ease, color 0.15s ease;
+  border-radius: 14px !important;
+  border: 2px solid #0284c7 !important;
+  background: #0c2340 !important;
+  color: #e8f4fc !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2) !important;
+  transition: all 0.15s ease !important;
 }
 .stButton > button:hover {
-  background: var(--accent) !important;
+  background: linear-gradient(135deg, #0369a1, #0ea5e9) !important;
+  border-color: #38bdf8 !important;
   color: #fff !important;
-  border-color: var(--accent) !important;
-}
-.stButton > button[kind="primary"],
-.stButton > button[data-testid="baseButton-primary"] {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: var(--accent) !important;
 }
 
-[data-testid="stCaptionContainer"] {
-  color: var(--muted) !important;
-  font-weight: 500 !important;
+.composer-wrap {
+  background: #0c2340;
+  border: 2px solid #38bdf8;
+  border-radius: 18px;
+  padding: 0.55rem 0.7rem;
+  box-shadow: 0 12px 28px rgba(2,132,199,0.22);
+  margin-top: 0.5rem;
+}
+
+/* Form yazma kutusu — koyu deniz teması */
+div[data-testid="stForm"] {
+  background: #0c2340 !important;
+  border: 2px solid #38bdf8 !important;
+  border-radius: 18px !important;
+  padding: 0.65rem 0.85rem 0.35rem !important;
+  box-shadow: 0 12px 28px rgba(2, 132, 199, 0.25), 0 0 0 3px rgba(56, 189, 248, 0.12) !important;
+}
+div[data-testid="stForm"] [data-testid="stTextInput"] input,
+div[data-testid="stForm"] input,
+div[data-testid="stForm"] input[type="text"] {
+  font-size: 1.08rem !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #38bdf8 !important;
+  border: 2px solid #0284c7 !important;
+  background: #071525 !important;
+  background-color: #071525 !important;
+  border-radius: 12px !important;
+  min-height: 2.75rem !important;
+}
+div[data-testid="stForm"] [data-testid="stTextInput"] input::placeholder,
+div[data-testid="stForm"] input::placeholder {
+  color: #7dd3fc !important;
+  -webkit-text-fill-color: #7dd3fc !important;
+  opacity: 0.8 !important;
+}
+div[data-testid="stForm"] [data-testid="stTextInput"] > div,
+div[data-testid="stForm"] [data-baseweb="input"],
+div[data-testid="stForm"] [data-baseweb="base-input"],
+div[data-testid="stForm"] [data-baseweb="input"] > div {
+  background: #071525 !important;
+  background-color: #071525 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+div[data-testid="stForm"] [data-testid="stFormSubmitButton"] button {
+  background: linear-gradient(135deg, #0369a1, #38bdf8) !important;
+  color: #fff !important;
+  border: 2px solid #7dd3fc !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  min-height: 2.75rem !important;
 }
 </style>
 """
@@ -384,7 +486,7 @@ def emotion_meta(label: str) -> dict[str, str]:
     for key, meta in EMOTION_META.items():
         if key.casefold() == label.casefold():
             return meta
-    return {"emoji": "◈", "color": "#1c4b5a", "hint": "Algılanan duygu"}
+    return {"emoji": "💬", "color": "#38bdf8", "hint": "Algılanan duygu"}
 
 
 @st.cache_resource
@@ -393,7 +495,6 @@ def load_runtime_models():
 
     if not os.path.exists("preprocessing_artifacts.pkl"):
         return None, None, None, None, None, "Ön işleme dosyası bulunamadı."
-
     try:
         vectorizer, label_encoder = load_preprocessing_artifacts("preprocessing_artifacts.pkl")
     except Exception as exc:  # noqa: BLE001
@@ -416,8 +517,7 @@ def load_runtime_models():
     if sk_bundle is None and fuzzy is None:
         return None, None, None, None, None, "Model dosyası bulunamadı."
 
-    active = "sklearn" if sk_bundle is not None else "fuzzy"
-    return sk_bundle, fuzzy, vectorizer, label_encoder, active, None
+    return sk_bundle, fuzzy, vectorizer, label_encoder, ("sklearn" if sk_bundle else "fuzzy"), None
 
 
 @st.cache_data
@@ -448,9 +548,7 @@ def load_model_comparison(path: str = "membership_function_comparison.csv") -> p
     if "membership_type" in df.columns and "model" not in df.columns:
         df["model"] = df["membership_type"].map(lambda x: MEMBERSHIP_TR.get(x, x))
     elif "model" in df.columns:
-        df["model"] = df["model"].map(
-            lambda x: MEMBERSHIP_TR.get(x, str(x).replace("_", " "))
-        )
+        df["model"] = df["model"].map(lambda x: MEMBERSHIP_TR.get(x, str(x).replace("_", " ")))
     return df
 
 
@@ -489,13 +587,7 @@ def analyze_text(text: str, sk_bundle, fuzzy_model, vectorizer, label_encoder, a
         key=lambda item: item[1],
         reverse=True,
     )
-    return {
-        "ok": True,
-        "label": label,
-        "confidence": conf,
-        "ranked": ranked,
-        "cleaned": cleaned,
-    }
+    return {"ok": True, "label": label, "confidence": conf, "ranked": ranked, "cleaned": cleaned}
 
 
 def render_assistant_reply(result: dict[str, Any]) -> None:
@@ -506,17 +598,16 @@ def render_assistant_reply(result: dict[str, Any]) -> None:
     meta = emotion_meta(result["label"])
     conf_pct = max(0.0, min(1.0, result["confidence"])) * 100
     alts = [item for item in result["ranked"][1:4] if item[1] >= 0.05]
-
     alt_html = "".join(
-        f'<span class="alt-chip">{emotion_meta(name)["emoji"]} {name} · {prob:.0%}</span>'
-        for name, prob in alts
+        f'<span class="alt-chip">{emotion_meta(n)["emoji"]} {n} · {p:.0%}</span>'
+        for n, p in alts
     ) or '<span class="alt-chip">Diğer duygular zayıf</span>'
 
     st.markdown(
         f"""
         <div class="emotion-card" style="border-left-color:{meta['color']};">
           <div class="emotion-head">
-            <div class="emotion-emoji" style="background:{meta['color']}14;border-color:{meta['color']}33;">{meta['emoji']}</div>
+            <div class="emotion-emoji" style="background:{meta['color']}18;">{meta['emoji']}</div>
             <div>
               <p class="emotion-label">{result['label']}</p>
               <p class="emotion-sub">{meta['hint']}</p>
@@ -533,14 +624,9 @@ def render_assistant_reply(result: dict[str, Any]) -> None:
         """,
         unsafe_allow_html=True,
     )
-
-    lead = (
-        f"Bu metinde baskın duygu **{result['label']}** "
-        f"(güven ≈ %{conf_pct:.0f})."
-    )
+    lead = f"Bu metinde baskın duygu **{result['label']}** (güven ≈ %{conf_pct:.0f})."
     if alts:
-        alt_names = ", ".join(name for name, _ in alts[:2])
-        lead += f" Yanında hafif {alt_names} izleri de var."
+        lead += f" Yanında hafif {', '.join(n for n, _ in alts[:2])} izleri de var."
     st.markdown(lead)
 
 
@@ -549,79 +635,115 @@ def render_project_sidebar(sk_bundle, fuzzy_model, label_encoder, active: str) -
     comparison_df = load_model_comparison()
 
     st.markdown('<p class="side-title">Proje Paneli</p>', unsafe_allow_html=True)
-    st.markdown('<span class="side-chip">Duygu Analizi · NLP</span>', unsafe_allow_html=True)
-    st.caption("Veri seti, model performansı ve sistem mimarisi.")
+    st.markdown('<span class="side-chip">Teknik bilgiler</span>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="info-box">Bu panelde modelin <b>ne kadar doğru çalıştığı</b>, '
+        "<b>hangi veriyle eğitildiği</b> ve sistemin <b>nasıl işlediği</b> anlatılır. "
+        "Paneli kapatmak/açmak için sol üstteki <b>☰ ok</b> düğmesini kullan.</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.subheader("Aktif model")
+    st.subheader("Şu an kullanılan model")
     if active == "sklearn" and sk_bundle:
-        name = str(sk_bundle.get("name", "sklearn")).replace("_", " ")
+        tip = str(sk_bundle.get("name", "sklearn")).replace("_", " ")
+        tip_tr = {
+            "linear svc calibrated": "Doğrusal Destek Vektör Makinesi (kalibre)",
+            "logistic regression": "Lojistik Regresyon",
+        }.get(tip.lower(), tip)
         m1, m2 = st.columns(2)
-        m1.metric("Tip", name.title())
-        m2.metric("Sınıf", len(label_encoder["id_to_label"]) if label_encoder else 10)
-        st.caption("TF-IDF + dengeli LinearSVC — yüksek doğruluk.")
+        m1.metric("Model tipi", tip_tr.split("(")[0].strip()[:18])
+        m2.metric("Duygu sınıfı", len(label_encoder["id_to_label"]) if label_encoder else 10)
+        st.caption(
+            f"**{tip_tr}** — metni sayısal özelliklere çevirip (TF-IDF) "
+            "en olası duygu sınıfını seçer. Kalibrasyon, güven skorunu daha anlamlı yapar."
+        )
     elif fuzzy_model:
         m1, m2 = st.columns(2)
         m1.metric("Üyelik", MEMBERSHIP_TR.get(fuzzy_model.membership_type, fuzzy_model.membership_type))
-        m2.metric("Kurallar", f"{len(fuzzy_model.rules_ or []):,}")
-        st.caption("Bulanık mantık — yorumlanabilir kurallar.")
+        m2.metric("Kural sayısı", f"{len(fuzzy_model.rules_ or []):,}")
+        st.caption("Bulanık mantık: kurallarla yorumlanabilir karar üretir.")
 
-    with st.expander("Performans", expanded=True):
+    with st.expander("Başarı oranları (ne anlama gelir?)", expanded=True):
+        st.markdown(
+            '<div class="info-box">'
+            "<b>Doğruluk (Accuracy):</b> Test örneklerinin yüzde kaçı doğru tahmin edildi.<br>"
+            "<b>F1 Skoru:</b> Kesinlik ve duyarlılığın dengeli ortalaması (0–1; yüksek daha iyi).<br>"
+            "<b>Kesinlik (Precision):</b> Model “X duygusu” dediğinde ne kadar haklı.<br>"
+            "<b>Duyarlılık (Recall):</b> Gerçek X duygularının ne kadarını yakaladı.<br>"
+            "<b>R²:</b> Modelin olasılık dağılımını ne kadar iyi açıkladığı.<br>"
+            "<b>Ortalama güven:</b> Tahminlere verdiği ortalama emin olma oranı."
+            "</div>",
+            unsafe_allow_html=True,
+        )
         if report:
             c1, c2 = st.columns(2)
-            c1.metric("Accuracy", f"{float(report['accuracy']) * 100:.1f}%")
-            c2.metric("F1", f"{float(report['f1_score']):.3f}")
+            c1.metric("Doğruluk (ne kadar doğru?)", f"{float(report['accuracy']) * 100:.1f}%")
+            c2.metric("F1 skoru (denge)", f"{float(report['f1_score']):.3f}")
             c3, c4 = st.columns(2)
-            c3.metric("Precision", f"{float(report['precision']):.3f}")
-            c4.metric("Recall", f"{float(report['recall']):.3f}")
+            c3.metric("Kesinlik (dediğimde haklı mı?)", f"{float(report['precision']):.3f}")
+            c4.metric("Duyarlılık (hepsini buldu mu?)", f"{float(report['recall']):.3f}")
             conf = report.get("mean_confidence", report.get("confidence_mean", 0))
             c5, c6 = st.columns(2)
-            c5.metric("R²", f"{float(report.get('r_squared', 0)):.3f}")
-            c6.metric("Güven", f"{float(conf) * 100:.1f}%")
+            c5.metric("R² (açıklama gücü)", f"{float(report.get('r_squared', 0)):.3f}")
+            c6.metric("Ort. güven (ne kadar emin?)", f"{float(conf) * 100:.1f}%")
             if "sklearn_accuracy" in report:
                 st.caption(
-                    f"Sklearn %{float(report['sklearn_accuracy'])*100:.1f} · "
-                    f"Fuzzy %{float(report.get('fuzzy_accuracy', 0))*100:.1f}"
+                    f"Karşılaştırma — Makine öğrenmesi: %{float(report['sklearn_accuracy'])*100:.1f} · "
+                    f"Bulanık mantık: %{float(report.get('fuzzy_accuracy', 0))*100:.1f}"
                 )
         else:
-            st.caption("Metrik dosyası yok.")
+            st.caption("Metrik dosyası bulunamadı.")
 
-    with st.expander("Veri seti", expanded=True):
+    with st.expander("Veri seti (eğitim kaynağı)", expanded=True):
+        st.markdown(
+            '<div class="info-box">'
+            "Model, etiketli Türkçe metinlerle eğitilir. "
+            "<b>Kütüphane</b> tüm toplanan örnekler; "
+            "<b>eğitim seti</b> kalite filtresinden geçmiş örneklerdir."
+            "</div>",
+            unsafe_allow_html=True,
+        )
         corpus = load_corpus_stats()
         if corpus:
-            st.metric("Kütüphane", f"{corpus['total']:,}")
+            st.metric("Kütüphanedeki örnek", f"{corpus['total']:,}")
             for src in DATASET_SOURCES:
                 st.markdown(f"- {src}")
-            st.bar_chart(corpus["counts"].rename_axis("Duygu").reset_index(name="Adet").set_index("Duygu"))
-        else:
-            st.caption("Korpus CSV bulunamadı.")
+            st.bar_chart(
+                corpus["counts"].rename_axis("Duygu").reset_index(name="Adet").set_index("Duygu")
+            )
         if report and "train_size" in report:
-            st.caption(f"Eğitim: {int(report['train_size']):,} / Test: {int(report['test_size']):,}")
+            st.caption(
+                f"Bu koşuda eğitim: {int(report['train_size']):,} örnek · "
+                f"test: {int(report['test_size']):,} örnek (%80/%20 ayrım)"
+            )
 
-    with st.expander("Mimari"):
+    with st.expander("Sistem nasıl çalışır?"):
         for step in [
-            "1. Metin temizleme + Türkçe stop-words",
-            "2. TF-IDF (n-gram 1–3)",
-            "3a. Bulanık kurallar (yorumlanabilir)",
-            "3b. LinearSVC (aktif tahmin)",
-            "4. Sohbet arayüzüne bağlama",
+            "1. Metin temizleme — link, @kullanıcı, noktalama; Türkçe dolgu kelimeleri çıkarılır",
+            "2. TF-IDF — kelime/kelime gruplarının önem ağırlıkları çıkarılır",
+            "3a. Bulanık yol — üyelik kümeleri + kurallar (açıklanabilir)",
+            "3b. Doğrusal SVM yolu — yüksek doğruluklu sınıflandırma (aktif)",
+            "4. Sonuç — duygu etiketi + güven skoru sohbette gösterilir",
         ]:
             st.markdown(f'<div class="pipeline-step">{step}</div>', unsafe_allow_html=True)
 
-    with st.expander("Model karşılaştırma"):
+    with st.expander("Model karşılaştırması"):
+        st.caption("Aynı test verisinde modellerin başarı oranları.")
         if comparison_df is not None and not comparison_df.empty:
             show = comparison_df.copy()
             label_col = "model" if "model" in show.columns else "Fonksiyon"
-            show["Accuracy"] = (show["accuracy"] * 100).map(lambda x: f"{x:.1f}%")
-            show["F1"] = show["f1_score"].map(lambda x: f"{x:.3f}")
-            cols = [c for c in [label_col, "Accuracy", "F1"] if c in show.columns]
-            st.dataframe(show[cols], hide_index=True, width="stretch")
-            chart = show.set_index(label_col)[["accuracy", "f1_score"]]
-            chart.columns = ["Accuracy", "F1"]
+            show = show.rename(columns={label_col: "Model"})
+            show["Doğruluk"] = (show["accuracy"] * 100).map(lambda x: f"{x:.1f}%")
+            show["F1 skoru"] = show["f1_score"].map(lambda x: f"{x:.3f}")
+            st.dataframe(show[["Model", "Doğruluk", "F1 skoru"]], hide_index=True, width="stretch")
+            chart = show.set_index("Model")[["accuracy", "f1_score"]]
+            chart.columns = ["Doğruluk", "F1"]
             st.bar_chart(chart)
         else:
-            st.caption("Karşılaştırma yok.")
+            st.caption("Karşılaştırma dosyası yok.")
 
-    with st.expander("Duygu sınıfları"):
+    with st.expander("10 duygu sınıfı ne demek?"):
+        st.caption("Her sınıf, metindeki baskın duyguyu temsil eder.")
         if label_encoder:
             for _, label in sorted(label_encoder["id_to_label"].items()):
                 meta = emotion_meta(label)
@@ -630,12 +752,13 @@ def render_project_sidebar(sk_bundle, fuzzy_model, label_encoder, active: str) -
     with st.expander("Görseller"):
         available = [(n, p) for n, p in VISUALS if os.path.exists(p)]
         if available:
-            choice = st.selectbox("Grafik", [n for n, _ in available], label_visibility="collapsed")
+            choice = st.selectbox("Grafik seçin", [n for n, _ in available])
             st.image(dict(available)[choice], width="stretch")
+            st.caption("Grafikler modelin test sonuçlarını özetler.")
         else:
-            st.caption("Görsel yok.")
+            st.caption("Görsel klasörü boş.")
 
-    st.caption("Eğitim projesi · Fuzzy + TF-IDF + Sklearn")
+    st.caption("Eğitim projesi · Bulanık mantık + TF-IDF + makine öğrenmesi")
 
 
 def main() -> None:
@@ -649,15 +772,15 @@ def main() -> None:
     with st.sidebar:
         render_project_sidebar(sk_bundle, fuzzy_model, label_encoder, active or "fuzzy")
 
-    top_l, top_r = st.columns([5, 1.2])
+    top_l, top_r = st.columns([5, 1.15])
     with top_l:
         st.markdown(
             """
             <div class="brand">
-              <div class="brand-mark">D</div>
+              <div class="brand-mark">💬</div>
               <div>
                 <h1>DuyguAsistan</h1>
-                <p>Türkçe metinlerde duygu analizi</p>
+                <p>Metnini yaz, duygusunu birlikte bulalım</p>
               </div>
             </div>
             """,
@@ -669,7 +792,7 @@ def main() -> None:
             st.rerun()
 
     if error or not vectorizer:
-        st.error("Model yüklenemedi. `python train_model.py` çalıştırın.")
+        st.error("Model yüklenemedi. Önce `python train_model.py` çalıştır.")
         st.caption(error or "")
         return
 
@@ -677,14 +800,14 @@ def main() -> None:
         st.markdown(
             """
             <div class="welcome">
-              Merhaba — ben <strong>DuyguAsistan</strong>.
-              Bir cümle yaz; duygusunu net şekilde çıkarayım.
-              Solda proje verisi ve performans özeti var.
+              Merhaba! Ben <strong>DuyguAsistan</strong>.
+              Aşağıya Türkçe bir cümle yaz veya örneklerden birine tıkla;
+              duygusunu hemen söyleyeyim.
             </div>
             """,
             unsafe_allow_html=True,
         )
-        st.markdown('<p class="section-label">Örnekler</p>', unsafe_allow_html=True)
+        st.markdown('<p class="section-label">Hızlı dene</p>', unsafe_allow_html=True)
         cols = st.columns(2)
         for i, starter in enumerate(STARTERS):
             if cols[i % 2].button(starter, key=f"starter_{i}", width="stretch"):
@@ -692,31 +815,47 @@ def main() -> None:
                 st.rerun()
 
     for message in st.session_state.messages:
-        with st.chat_message(message["role"], avatar="●" if message["role"] == "user" else "◈"):
+        with st.chat_message(message["role"], avatar="🧑" if message["role"] == "user" else "💬"):
             if message["role"] == "user":
                 st.markdown(message["content"])
             else:
                 render_assistant_reply(message["result"])
 
-    prompt = st.chat_input("Cümlenizi yazın…")
+    # Güvenilir yazma alanı (chat_input bazen CSS ile kilitlenebiliyordu)
+    prompt = None
     if "pending_prompt" in st.session_state:
         prompt = st.session_state.pop("pending_prompt")
+
+    with st.form("composer", clear_on_submit=True):
+        c_in, c_btn = st.columns([6.2, 1.3], vertical_alignment="bottom")
+        with c_in:
+            typed = st.text_input(
+                "Metin",
+                placeholder="Buraya cümleni yaz… örn. Bugün harika geçti",
+                label_visibility="collapsed",
+                key="composer_text",
+            )
+        with c_btn:
+            sent = st.form_submit_button("Gönder", width="stretch")
+        if sent and typed and typed.strip():
+            prompt = typed.strip()
 
     if prompt and prompt.strip():
         user_text = prompt.strip()
         st.session_state.messages.append({"role": "user", "content": user_text})
 
-        with st.chat_message("user", avatar="●"):
+        with st.chat_message("user", avatar="🧑"):
             st.markdown(user_text)
 
-        with st.chat_message("assistant", avatar="◈"):
-            with st.spinner("Analiz ediliyor…"):
+        with st.chat_message("assistant", avatar="💬"):
+            with st.spinner("Duyguyu okuyorum…"):
                 result = analyze_text(
                     user_text, sk_bundle, fuzzy_model, vectorizer, label_encoder, active
                 )
             render_assistant_reply(result)
 
         st.session_state.messages.append({"role": "assistant", "result": result})
+        st.rerun()
 
 
 if __name__ == "__main__":
